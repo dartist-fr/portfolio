@@ -159,8 +159,6 @@
       color: rgba(255, 255, 255, .88);
       font-size: 1.05rem;
     }
-    .featured-section { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(220px,.9fr); gap:32px; align-items:center; padding:64px 0 10px; }
-    .featured-image { display:block; width:100%; max-height:540px; object-fit:cover; background:var(--paper-2); cursor:pointer; }
     .featured-copy .eyebrow, .about-copy .eyebrow { color:var(--accent); font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; margin-bottom:12px; }
     .featured-copy h2, .about-copy h2 { font-family:'Fraunces',serif; font-size:clamp(2rem,4vw,3.3rem); font-weight:400; line-height:1.05; }
     .featured-copy p, .about-copy p { color:var(--ink-soft); margin-top:16px; max-width:48ch; }
@@ -173,8 +171,6 @@
     .lb-fullscreen { position:absolute; top:22px; right:72px; z-index:2; color:#f4f2ec; background:rgba(20,18,15,.35); border:1px solid rgba(255,255,255,.24); padding:8px 11px; cursor:pointer; font:inherit; font-size:.75rem; }
     .lb-fullscreen:hover { background:rgba(255,255,255,.14); }
     @media (max-width:700px) {
-      .featured-section, .about-section { grid-template-columns:1fr; gap:22px; padding-top:42px; }
-      .featured-image { max-height:390px; }
       .about-section { padding-bottom:54px; }
       .lb-fullscreen { top:auto; bottom:54px; right:12px; }
     }
@@ -462,18 +458,6 @@
       <p>Du bord des terrains aux rues du monde, je photographie les instants qui méritent d'être vécus deux fois.</p>
     </header>
 
-    <section class="featured-section" id="a-la-une" aria-label="Photo à la une">
-      <button type="button" id="featured-open" class="featured-photo" aria-label="Agrandir la photo à la une" style="margin:0;">
-        <img id="featured-home-image" class="featured-image" src="" alt="Photo à la une" loading="lazy" />
-      </button>
-      <div class="featured-copy">
-        <div class="eyebrow">Sélection</div>
-        <h2 id="featured-home-title">À la une</h2>
-        <p id="featured-home-subtitle">Une image choisie parmi les séries du portfolio.</p>
-        <a class="text-link" href="#travaux">Explorer toutes les séries ↗</a>
-      </div>
-    </section>
-
     <section id="travaux">
       <div class="section-head">
         <h2>Séries</h2>
@@ -566,11 +550,7 @@
     const lightboxImg = document.getElementById("lightbox-img");
     const lightboxCounter = document.getElementById("lightbox-counter");
     const lightboxCaption = document.getElementById("lightbox-caption");
-    const featuredHomeImage = document.getElementById("featured-home-image");
-    const featuredHomeTitle = document.getElementById("featured-home-title");
-    const featuredHomeSubtitle = document.getElementById("featured-home-subtitle");
     let photoMetadata = {};
-    let featuredHomePhoto = null;
     let touchStartX = null;
     let touchStartY = null;
     let lightboxItems = [];
@@ -589,7 +569,7 @@
     }
     function observerNouveauxElements(root) {
       if (!root || !revealObserver) return;
-      root.querySelectorAll(".album-card, .photo-item, .featured-photo").forEach((element, index) => {
+      root.querySelectorAll(".album-card, .photo-item").forEach((element, index) => {
         if (element.dataset.revealReady) return;
         element.dataset.revealReady = "true";
         element.classList.add("js-reveal");
@@ -608,20 +588,6 @@
         if (album.cover) return { album, photo: album.cover };
       }
       return null;
-    }
-
-    function afficherPhotoALaUne() {
-      const selection = parcourirAlbums(portfolioData);
-      if (!selection) {
-        document.getElementById("a-la-une").hidden = true;
-        return;
-      }
-      featuredHomePhoto = selection.photo;
-      featuredHomeImage.src = selection.photo;
-      featuredHomeImage.alt = selection.album.titre + " · photo à la une";
-      featuredHomeTitle.textContent = selection.album.titre;
-      featuredHomeSubtitle.textContent = selection.album.sujet || "Une image parmi les séries du portfolio.";
-      document.getElementById("featured-open").onclick = () => ouvrirLightbox(selection.photo, selection.album.titre + " · photo à la une");
     }
 
     function afficherAlbums() {
@@ -884,7 +850,7 @@
         }
         portfolioData = data.albums;
         photoMetadata = data.photoMetadata || {};
-        afficherPhotoALaUne();
+
         afficherAlbums();
       } catch (error) {
         albumsView.innerHTML = '<p class="empty-series">Impossible de charger les séries pour le moment. Réessayez dans quelques instants.</p>';
