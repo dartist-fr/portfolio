@@ -688,6 +688,7 @@
 
       travaux.style.display = "none";
       photoView.style.display = "block";
+      photoView.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function ouvrirSousAlbum(child) {
@@ -730,6 +731,7 @@
         photosContainer.appendChild(item);
       });
       observerNouveauxElements(photosContainer);
+      photoView.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function fermerAlbum() {
