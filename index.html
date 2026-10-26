@@ -55,6 +55,7 @@
     .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
 
     /* --- Magic UI-inspired effects: aurora, shine border, glare spotlight --- */
+    @property --beam-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
     .scroll-progress { position: fixed; inset: 0 auto auto 0; width: 100%; height: 3px; z-index: 100; transform: scaleX(0); transform-origin: left center; background: linear-gradient(90deg, var(--accent), #f0b18f, #f8e1c9); box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 55%, transparent); pointer-events: none; }
     header.hero::after {
       background: radial-gradient(ellipse at 18% 35%, rgba(179,84,47,.22), transparent 42%), radial-gradient(ellipse at 82% 18%, rgba(240,177,143,.13), transparent 38%), linear-gradient(90deg, rgba(12,12,11,.82) 0%, rgba(12,12,11,.52) 52%, rgba(12,12,11,.2) 100%), linear-gradient(0deg, rgba(12,12,11,.34), transparent 58%);
@@ -68,7 +69,7 @@
     .hero h1 em { background: linear-gradient(110deg, #f0b18f 15%, #fff1e6 35%, #f0b18f 55%); background-size: 220% auto; color: #f0b18f; background-clip: text; -webkit-background-clip: text; animation: textShimmer 7s linear infinite; }
     @keyframes textShimmer { to { background-position: 220% center; } }
     .album-frame { isolation: isolate; }
-    .album-frame::before { content: ""; position: absolute; inset: 0; padding: 1.5px; z-index: 2; background: conic-gradient(from 0deg, transparent 0deg, transparent 280deg, var(--accent) 320deg, #f0b18f 345deg, transparent 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+    .album-frame::before { content: ""; position: absolute; inset: 0; padding: 1.5px; z-index: 2; background: conic-gradient(from var(--beam-angle, 0deg), transparent 0deg, transparent 280deg, var(--accent) 320deg, #f0b18f 345deg, transparent 360deg); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; pointer-events: none; transition: opacity .35s ease; }
     .album-frame::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .35s ease; background: radial-gradient(240px circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255,239,220,.24), transparent 65%); }
     .album-card:hover .album-frame::before, .album-card:focus-visible .album-frame::before { opacity: 1; animation: borderBeam 3.6s linear infinite; }
     .album-card:hover .album-frame::after, .album-card:focus-visible .album-frame::after { opacity: 1; }
@@ -76,7 +77,7 @@
     .photo-item { isolation: isolate; }
     .photo-item::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,.23) 45%, transparent 62%); transform: translateX(-110%); transition: opacity .25s ease; }
     .photo-item:hover::after { opacity: 1; animation: photoShine .9s ease both; }
-    @keyframes borderBeam { to { filter: hue-rotate(20deg); } }
+    @keyframes borderBeam { to { --beam-angle: 360deg; } }
     @keyframes photoShine { to { transform: translateX(110%); } }
     .album-card:focus-visible .album-frame { outline: 2px solid var(--accent); outline-offset: 4px; }
     @media (prefers-reduced-motion: reduce) {
