@@ -431,6 +431,22 @@
       .lb-close { top: 14px; right: 16px; }
       footer { align-items: flex-start; flex-direction: column; }
     }
+
+    /* Text Pressure + Particle Typography : effets légers, sans dépendance externe */
+    .particle-title { position: relative; isolation: isolate; }
+    .title-visual { position: relative; z-index: 1; display: inline; }
+    .pressure-char { display: inline-block; transform: scaleX(var(--pressure-scale, 1)); transform-origin: center; transition: transform 120ms ease-out; will-change: transform; }
+    .particle-canvas { position: absolute; inset: -10% -2%; z-index: 2; width: 104%; height: 120%; overflow: visible; pointer-events: none; opacity: .78; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    @media (hover: none), (pointer: coarse) {
+      .pressure-char { transition-duration: 180ms; }
+      .particle-canvas { opacity: .42; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pressure-char { transform: none !important; transition: none !important; }
+      .particle-canvas { display: none; }
+    }
+
   </style>
 </head>
 <body>
@@ -452,7 +468,7 @@
 
     <header class="hero">
       <div class="eyebrow">Photographe · Depuis 2022</div>
-      <h1>Capturer la <em>lumière</em>, figer l'instant.</h1>
+      <h1 class="particle-title" id="particle-title"><span class="title-visual" aria-hidden="true">Capturer la <em>lumière</em>, figer l'instant.</span><span class="sr-only">Capturer la lumière, figer l\'instant.</span><canvas class="particle-canvas" aria-hidden="true"></canvas></h1>
       <p>Du bord des terrains aux rues du monde, je photographie les instants qui méritent d'être vécus deux fois.</p>
     </header>
 
@@ -742,6 +758,159 @@
       if (e.key === "ArrowLeft") naviguerLightbox(-1);
       if (e.key === "ArrowRight") naviguerLightbox(1);
     });
+
+
+    // Text Pressure : chaque caractère s'élargit légèrement près du pointeur.
+    // Particle Typography : des points reprennent la forme des lettres et réagissent au curseur.
+    (() => {
+      const title = document.getElementById("particle-title");
+      const visual = title?.querySelector(".title-visual");
+      const canvas = title?.querySelector(".particle-canvas");
+      if (!title || !visual || !canvas) return;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const finePointer = window.matchMedia("(pointer: fine)");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      function wrapTextNodes(node) {
+        Array.from(node.childNodes).forEach(child => {
+          if (child.nodeType === Node.TEXT_NODE) {
+            const fragment = document.createDocumentFragment();
+            Array.from(child.textContent).forEach(char => {
+              const span = document.createElement("span");
+              span.className = "pressure-char";
+              span.textContent = char;
+              span.dataset.char = char;
+              fragment.appendChild(span);
+            });
+            node.replaceChild(fragment, child);
+          } else if (child.nodeType === Node.ELEMENT_NODE) {
+            wrapTextNodes(child);
+          }
+        });
+      }
+      wrapTextNodes(visual);
+
+      let particles = [];
+      let width = 0, height = 0, raf = 0;
+      let pointer = { x: -1000, y: -1000, active: false };
+      const dpr = () => Math.min(window.devicePixelRatio || 1, 2);
+
+      function buildParticles() {
+        const rect = title.getBoundingClientRect();
+        const scale = dpr();
+        width = Math.max(1, rect.width);
+        height = Math.max(1, rect.height);
+        canvas.width = Math.round(width * scale);
+        canvas.height = Math.round(height * scale);
+        ctx.setTransform(scale, 0, 0, scale, 0, 0);
+        particles = [];
+        if (reduceMotion.matches || !rect.width || !rect.height) return;
+
+        visual.querySelectorAll(".pressure-char").forEach(span => {
+          const char = span.dataset.char;
+          if (!char || !char.trim()) return;
+          const charRect = span.getBoundingClientRect();
+          if (!charRect.width || !charRect.height) return;
+          const style = getComputedStyle(span);
+          const fontSize = Math.max(8, parseFloat(style.fontSize) || 16);
+          const font = style.font;
+          const off = document.createElement("canvas");
+          const offCtx = off.getContext("2d", { willReadFrequently: true });
+          const offW = Math.max(8, Math.ceil(charRect.width * scale));
+          const offH = Math.max(8, Math.ceil(charRect.height * scale));
+          off.width = offW;
+          off.height = offH;
+          offCtx.font = font || (style.fontWeight + " " + fontSize + "px " + style.fontFamily);
+          offCtx.textBaseline = "middle";
+          offCtx.fillStyle = "#fff";
+          offCtx.fillText(char, 0, offH / 2, offW);
+          const pixels = offCtx.getImageData(0, 0, offW, offH).data;
+          const step = Math.max(3, Math.round(4 * scale));
+          for (let y = 1; y < offH; y += step) {
+            for (let x = 1; x < offW; x += step) {
+              if (pixels[(y * offW + x) * 4 + 3] > 100) {
+                particles.push({
+                  x: charRect.left - rect.left + x / scale,
+                  y: charRect.top - rect.top + y / scale,
+                  ox: charRect.left - rect.left + x / scale,
+                  oy: charRect.top - rect.top + y / scale,
+                  vx: 0, vy: 0,
+                  size: 0.7 + Math.random() * 0.65
+                });
+              }
+            }
+          }
+        });
+        drawParticles();
+      }
+
+      function drawParticles() {
+        raf = 0;
+        if (reduceMotion.matches) { ctx.clearRect(0, 0, width, height); return; }
+        ctx.clearRect(0, 0, width, height);
+        const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#b3542f";
+        particles.forEach(p => {
+          let tx = p.ox, ty = p.oy;
+          if (pointer.active) {
+            const dx = p.x - pointer.x, dy = p.y - pointer.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+            const radius = 92;
+            if (dist < radius) {
+              const force = (radius - dist) / radius;
+              tx += dx / dist * force * 24;
+              ty += dy / dist * force * 24;
+            }
+          }
+          p.vx += (tx - p.x) * 0.12;
+          p.vy += (ty - p.y) * 0.12;
+          p.vx *= 0.78;
+          p.vy *= 0.78;
+          p.x += p.vx;
+          p.y += p.vy;
+          ctx.globalAlpha = pointer.active ? 0.42 + Math.random() * 0.4 : 0.18;
+          ctx.fillStyle = accent;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+        if (pointer.active || particles.some(p => Math.abs(p.x - p.ox) > 0.6 || Math.abs(p.y - p.oy) > 0.6)) {
+          raf = requestAnimationFrame(drawParticles);
+        }
+      }
+
+      function onPointerMove(event) {
+        const rect = title.getBoundingClientRect();
+        pointer.x = event.clientX - rect.left;
+        pointer.y = event.clientY - rect.top;
+        pointer.active = true;
+        if (finePointer.matches && !reduceMotion.matches) {
+          visual.querySelectorAll(".pressure-char").forEach(span => {
+            const r = span.getBoundingClientRect();
+            const cx = r.left + r.width / 2;
+            const distance = Math.abs(event.clientX - cx);
+            const proximity = Math.max(0, 1 - distance / 190);
+            const vertical = event.clientY >= r.top - 60 && event.clientY <= r.bottom + 60;
+            const amount = vertical ? proximity : proximity * 0.15;
+            span.style.setProperty("--pressure-scale", (1 + amount * 0.65).toFixed(3));
+          });
+        }
+        if (!raf && !reduceMotion.matches) raf = requestAnimationFrame(drawParticles);
+      }
+      function resetPointer() {
+        pointer.active = false;
+        visual.querySelectorAll(".pressure-char").forEach(span => span.style.setProperty("--pressure-scale", "1"));
+        if (!raf && !reduceMotion.matches) raf = requestAnimationFrame(drawParticles);
+      }
+      title.addEventListener("pointermove", onPointerMove, { passive: true });
+      title.addEventListener("pointerleave", resetPointer, { passive: true });
+      window.addEventListener("resize", buildParticles, { passive: true });
+      reduceMotion.addEventListener?.("change", buildParticles);
+      if (document.fonts?.ready) document.fonts.ready.then(buildParticles);
+      else window.addEventListener("load", buildParticles, { once: true });
+      buildParticles();
+    })();
 
     const themeToggle = document.getElementById("theme-toggle");
     const themeIcon = document.getElementById("theme-icon");
