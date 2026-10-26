@@ -52,7 +52,7 @@ def main():
         build(folder, folder.name)
         for folder in sorted((p for p in IMAGE_ROOT.iterdir() if p.is_dir()), key=lambda p: p.name.casefold())
     ]
-    OUTPUT.write_text(json.dumps(series, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    OUTPUT.write_text(json.dumps({"albums": series}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     photo_count = sum(count_photos(s) for s in series)
     print(f"Manifeste généré : {len(series)} séries principales, {photo_count} photos.")
 
