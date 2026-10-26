@@ -1,4 +1,8 @@
 {
+  "hero": {
+    "image": "images/Capture d'écran 2024-02-28 155431.png",
+    "position": "center 45%"
+  },
   "albums": [
     {
       "titre": "France",
