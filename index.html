@@ -166,6 +166,21 @@
       gap: 30px 26px;
       padding-bottom: 80px;
     }
+    .series-tools { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: -8px 0 28px; }
+    .series-search-wrap { position: relative; width: min(100%, 360px); }
+    .series-search-wrap::before { content: "⌕"; position: absolute; left: 14px; top: 50%; transform: translateY(-52%); font-size: 1.35rem; color: var(--ink-soft); pointer-events: none; }
+    .series-search { width: 100%; border: 1px solid var(--line); background: var(--paper-2); color: var(--ink); border-radius: 2px; padding: 12px 14px 12px 42px; font: inherit; font-size: .9rem; outline-offset: 4px; transition: border-color .2s, box-shadow .2s; }
+    .series-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent); }
+    .series-search::placeholder { color: var(--ink-soft); }
+    .search-status { color: var(--ink-soft); font-size: .78rem; white-space: nowrap; }
+    .no-search-results { grid-column: 1 / -1; padding: 34px 0; color: var(--ink-soft); border-top: 1px solid var(--line); }
+    .js-reveal { opacity: 0; transform: translateY(16px); }
+    .js-reveal.is-visible { opacity: 1; transform: translateY(0); transition: opacity .65s ease, transform .65s cubic-bezier(.2,.8,.2,1); }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+      .js-reveal { opacity: 1; transform: none; }
+    }
     .album-card { cursor: pointer; background: none; border: none; text-align: left; font: inherit; color: inherit; padding: 0; }
     .album-frame {
       position: relative;
@@ -325,12 +340,23 @@
     #lightbox.open { display: flex; }
     #lightbox img { max-width: 92vw; max-height: 88vh; object-fit: contain; box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
     .lb-close {
-      position: absolute;
-      top: 22px; right: 26px;
-      color: #f4f2ec;
-      font-size: 1.6rem;
-      background: none; border: none; cursor: pointer;
-      line-height: 1;
+      position: absolute; top: 22px; right: 26px; z-index: 2;
+      color: #f4f2ec; font-size: 1.6rem; background: none; border: none; cursor: pointer; line-height: 1; padding: 8px;
+    }
+    .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 46px; height: 54px; border: 1px solid rgba(255,255,255,.24); color: #f4f2ec; background: rgba(20,18,15,.35); font: inherit; font-size: 2rem; cursor: pointer; transition: background .2s, border-color .2s; }
+    .lb-nav:hover, .lb-nav:focus-visible { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.65); }
+    .lb-prev { left: 22px; } .lb-next { right: 22px; }
+    .lb-caption { position: absolute; bottom: 18px; left: 72px; right: 72px; color: rgba(255,255,255,.8); text-align: center; font-size: .82rem; }
+    .lb-counter { position: absolute; top: 27px; left: 26px; color: rgba(255,255,255,.72); font-size: .78rem; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+    .lb-nav[hidden] { display: none; }
+    @media (max-width: 600px) {
+      .series-tools { align-items: flex-start; flex-direction: column; gap: 10px; }
+      .series-search-wrap { width: 100%; }
+      .lb-prev { left: 8px; } .lb-next { right: 8px; }
+      .lb-nav { width: 36px; height: 46px; }
+      .lb-counter { top: 18px; left: 16px; }
+      .lb-close { top: 10px; right: 10px; }
+      .lb-caption { left: 48px; right: 48px; bottom: 10px; }
     }
 
     footer {
@@ -403,6 +429,13 @@
         <h2>Séries</h2>
         <span class="meta" id="series-count"></span>
       </div>
+      <div class="series-tools">
+        <label class="series-search-wrap">
+          <span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Rechercher une série</span>
+          <input id="series-search" class="series-search" type="search" placeholder="Rechercher une série…" autocomplete="off" aria-label="Rechercher une série" />
+        </label>
+        <span id="search-status" class="search-status" aria-live="polite"></span>
+      </div>
       <main id="albums-view" class="albums-grid"></main>
     </section>
 
@@ -431,9 +464,13 @@
     </footer>
   </div>
 
-  <div id="lightbox" onclick="fermerLightbox()">
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Visionneuse photo" onclick="fermerLightbox()">
+    <span id="lightbox-counter" class="lb-counter" aria-live="polite"></span>
     <button class="lb-close" type="button" aria-label="Fermer" onclick="event.stopPropagation(); fermerLightbox()">✕</button>
+    <button class="lb-nav lb-prev" type="button" aria-label="Photo précédente" onclick="event.stopPropagation(); naviguerLightbox(-1)">‹</button>
     <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+    <button class="lb-nav lb-next" type="button" aria-label="Photo suivante" onclick="event.stopPropagation(); naviguerLightbox(1)">›</button>
+    <p id="lightbox-caption" class="lb-caption"></p>
   </div>
 
   <script>
@@ -446,14 +483,49 @@
     const currentAlbumTitle = document.getElementById("current-album-title");
     const currentAlbumSub = document.getElementById("current-album-sub");
     const seriesCount = document.getElementById("series-count");
+    const seriesSearch = document.getElementById("series-search");
+    const searchStatus = document.getElementById("search-status");
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightbox-img");
+    const lightboxCounter = document.getElementById("lightbox-counter");
+    const lightboxCaption = document.getElementById("lightbox-caption");
+    let lightboxItems = [];
+    let lightboxIndex = 0;
+    let revealObserver = null;
+
+    if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.08, rootMargin: "0px 0px -24px 0px" });
+    }
+    function observerNouveauxElements(root) {
+      if (!root || !revealObserver) return;
+      root.querySelectorAll(".album-card, .photo-item, .featured-photo").forEach((element, index) => {
+        if (element.dataset.revealReady) return;
+        element.dataset.revealReady = "true";
+        element.classList.add("js-reveal");
+        element.style.transitionDelay = Math.min(index % 6, 5) * 55 + "ms";
+        revealObserver.observe(element);
+      });
+    }
 
     function afficherAlbums() {
       albumsView.innerHTML = "";
+      const query = seriesSearch.value.trim().toLocaleLowerCase("fr");
+      const albumsFiltres = portfolioData.filter(album => (album.titre + " " + (album.sujet || "")).toLocaleLowerCase("fr").includes(query));
       seriesCount.textContent = String(portfolioData.length).padStart(2, "0") + " séries";
-
-      portfolioData.forEach((album, index) => {
+      searchStatus.textContent = query ? albumsFiltres.length + " résultat" + (albumsFiltres.length > 1 ? "s" : "") : "Explorer les séries";
+      if (!albumsFiltres.length) {
+        albumsView.innerHTML = '<p class="no-search-results">Aucune série ne correspond à votre recherche.</p>';
+        return;
+      }
+      albumsFiltres.forEach((album) => {
+        const index = portfolioData.indexOf(album);
         const card = document.createElement("button");
         card.className = "album-card";
         card.onclick = () => ouvrirAlbum(index);
@@ -470,7 +542,9 @@
         `;
         albumsView.appendChild(card);
       });
+      observerNouveauxElements(albumsView);
     }
+    seriesSearch.addEventListener("input", afficherAlbums);
 
     function afficherPhotoPrincipale(album) {
       if (!album || album.children || !album.cover) return;
@@ -486,6 +560,7 @@
       image.onerror = () => featured.remove();
       featured.appendChild(image);
       photosContainer.appendChild(featured);
+      observerNouveauxElements(photosContainer);
     }
 
     function ouvrirAlbum(index) {
@@ -526,6 +601,7 @@
         item.innerHTML = `<img src="${photo}" alt="${album.titre} · cliché ${i + 1}" loading="lazy" onerror="this.style.visibility='hidden'; console.error('Image introuvable :', this.src)" />`;
         photosContainer.appendChild(item);
       });
+      observerNouveauxElements(photosContainer);
 
       travaux.style.display = "none";
       photoView.style.display = "block";
@@ -566,6 +642,7 @@
         item.innerHTML = `<img src="${photo}" alt="${child.titre} · cliché ${i + 1}" loading="lazy" />`;
         photosContainer.appendChild(item);
       });
+      observerNouveauxElements(photosContainer);
     }
 
     function fermerAlbum() {
@@ -574,16 +651,42 @@
     }
 
     function ouvrirLightbox(src, alt) {
-      lightboxImg.src = src;
-      lightboxImg.alt = alt;
+      lightboxItems = Array.from(photosContainer.querySelectorAll(".featured-photo img, .photo-item img"))
+        .filter(image => image.src)
+        .map(image => ({ src: image.src, alt: image.alt || alt }));
+      if (!lightboxItems.length) lightboxItems = [{ src: new URL(src, window.location.href).href, alt }];
+      const requestedSrc = new URL(src, window.location.href).href;
+      const foundIndex = lightboxItems.findIndex(item => item.src === requestedSrc);
+      lightboxIndex = foundIndex >= 0 ? foundIndex : 0;
+      afficherImageLightbox();
       lightbox.classList.add("open");
       document.body.style.overflow = "hidden";
+      lightbox.querySelector(".lb-close").focus();
+    }
+    function afficherImageLightbox() {
+      const item = lightboxItems[lightboxIndex];
+      if (!item) return;
+      lightboxImg.src = item.src;
+      lightboxImg.alt = item.alt;
+      lightboxCaption.textContent = item.alt;
+      lightboxCounter.textContent = (lightboxIndex + 1) + " / " + lightboxItems.length;
+      lightbox.querySelectorAll(".lb-nav").forEach(button => { button.hidden = lightboxItems.length < 2; });
+    }
+    function naviguerLightbox(direction) {
+      if (!lightboxItems.length) return;
+      lightboxIndex = (lightboxIndex + direction + lightboxItems.length) % lightboxItems.length;
+      afficherImageLightbox();
     }
     function fermerLightbox() {
       lightbox.classList.remove("open");
       document.body.style.overflow = "";
     }
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") fermerLightbox(); });
+    document.addEventListener("keydown", (e) => {
+      if (!lightbox.classList.contains("open")) return;
+      if (e.key === "Escape") fermerLightbox();
+      if (e.key === "ArrowLeft") naviguerLightbox(-1);
+      if (e.key === "ArrowRight") naviguerLightbox(1);
+    });
 
     const themeToggle = document.getElementById("theme-toggle");
     const themeIcon = document.getElementById("theme-icon");
