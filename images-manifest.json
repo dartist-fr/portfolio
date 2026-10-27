@@ -5,6 +5,12 @@
   },
   "albums": [
     {
+      "titre": "Divers",
+      "sujet": "Photographie",
+      "cover": "",
+      "photos": []
+    },
+    {
       "titre": "France",
       "sujet": "France · Photographie",
       "cover": "images/France/Avignon/DSCF0046.webp",
@@ -78,6 +84,12 @@
       ]
     },
     {
+      "titre": "Portraits",
+      "sujet": "Photographie",
+      "cover": "",
+      "photos": []
+    },
+    {
       "titre": "Red Bull",
       "sujet": "Sport · Événementiel",
       "cover": "images/Red%20Bull/DSCF6593.webp",
@@ -104,13 +116,13 @@
     {
       "titre": "Sports",
       "sujet": "Sport · Photographie",
-      "cover": "images/Sports/Badminton/DSCF7438.webp",
+      "cover": "images/Sports/Badminton/DSCF0102.webp",
       "photos": [],
       "children": [
         {
           "titre": "Badminton",
           "sujet": "Sport · Photographie",
-          "cover": "images/Sports/Badminton/DSCF7438.webp",
+          "cover": "images/Sports/Badminton/DSCF0102.webp",
           "photos": [
             "images/Sports/Badminton/DSCF0102.webp",
             "images/Sports/Badminton/DSCF0483.webp",
