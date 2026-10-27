@@ -207,12 +207,9 @@
     .series-search::placeholder { color: var(--ink-soft); }
     .search-status { color: var(--ink-soft); font-size: .78rem; white-space: nowrap; }
     .no-search-results { grid-column: 1 / -1; padding: 34px 0; color: var(--ink-soft); border-top: 1px solid var(--line); }
-    .js-reveal { opacity: 0; transform: translateY(16px); }
-    .js-reveal.is-visible { opacity: 1; transform: translateY(0); transition: opacity .65s ease, transform .65s cubic-bezier(.2,.8,.2,1); }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
-      .js-reveal { opacity: 1; transform: none; }
     }
     .album-card { cursor: pointer; background: none; border: none; text-align: left; font: inherit; color: inherit; padding: 0; }
     .album-frame {
@@ -644,29 +641,6 @@
     let touchStartY = null;
     let lightboxItems = [];
     let lightboxIndex = 0;
-    let revealObserver = null;
-
-    if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      revealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.08, rootMargin: "0px 0px -24px 0px" });
-    }
-    function observerNouveauxElements(root) {
-      if (!root || !revealObserver) return;
-      root.querySelectorAll(".album-card, .photo-item").forEach((element, index) => {
-        if (element.dataset.revealReady) return;
-        element.dataset.revealReady = "true";
-        element.classList.add("js-reveal");
-        element.style.transitionDelay = Math.min(index % 6, 5) * 55 + "ms";
-        revealObserver.observe(element);
-      });
-    }
-
     function parcourirAlbums(albums) {
       for (const album of (albums || [])) {
         if (album.children) {
@@ -825,7 +799,7 @@
         `;
         albumsView.appendChild(card);
       });
-      observerNouveauxElements(albumsView);
+
     }
     seriesSearch.addEventListener("input", afficherAlbums);
 
@@ -844,7 +818,7 @@
       image.onerror = () => featured.remove();
       featured.appendChild(image);
       photosContainer.appendChild(featured);
-      observerNouveauxElements(photosContainer);
+
     }
 
     function ouvrirAlbum(index) {
@@ -893,7 +867,6 @@
         item.appendChild(image);
         photosContainer.appendChild(item);
       });
-      observerNouveauxElements(photosContainer);
 
       travaux.style.display = "none";
       photoView.style.display = "block";
@@ -942,7 +915,7 @@
         item.appendChild(image);
         photosContainer.appendChild(item);
       });
-      observerNouveauxElements(photosContainer);
+
       albumMarquee.classList.add("visible");
       photoView.scrollIntoView({ behavior: "smooth", block: "start" });
     }
