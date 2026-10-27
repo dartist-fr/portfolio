@@ -7,7 +7,7 @@
     {
       "titre": "France",
       "sujet": "France · Photographie",
-      "cover": "images/France/Montagne/DSCF7893.webp",
+      "cover": "images/France/Avignon/DSCF0046.webp",
       "photos": [],
       "children": [
         {
@@ -27,13 +27,12 @@
             "images/France/Avignon/DSCF0121.webp",
             "images/France/Avignon/DSCF0150.webp",
             "images/France/Avignon/DSCF0154.webp"
-          ],
-          "description": "Lumières, pierres anciennes et détails architecturaux : une promenade photographique au cœur d’Avignon."
+          ]
         },
         {
           "titre": "Montagne",
           "sujet": "France · Photographie",
-          "cover": "images/France/Montagne/DSCF7893.webp",
+          "cover": "images/France/Montagne/2023_0418_13193500%20%282%29.webp",
           "photos": [
             "images/France/Montagne/2023_0418_13193500%20%282%29.webp",
             "images/France/Montagne/2023_0418_13321900%20%281%29.webp",
@@ -57,8 +56,7 @@
             "images/France/Montagne/DSCF7902.webp",
             "images/France/Montagne/DSCF7942.webp",
             "images/France/Montagne/DSCF7943.webp"
-          ],
-          "description": "Des panoramas aux détails des sentiers, la montagne dévoile ses reliefs, sa lumière et son atmosphère."
+          ]
         },
         {
           "titre": "Sud",
@@ -75,11 +73,9 @@
             "images/France/Sud/DSCF3577.webp",
             "images/France/Sud/DSCF3579.webp",
             "images/France/Sud/DSCF3585.webp"
-          ],
-          "description": "Une série inspirée par le Sud, entre lumière méditerranéenne, paysages et scènes de vie."
+          ]
         }
-      ],
-      "description": "Des ruelles chargées d’histoire aux paysages du Sud, un regard sur les lieux et les ambiances qui font la richesse de la France."
+      ]
     },
     {
       "titre": "Red Bull",
@@ -103,28 +99,50 @@
         "images/Red%20Bull/DSCF9078.webp",
         "images/Red%20Bull/DSCF9301.webp",
         "images/Red%20Bull/DSCF9410.webp"
-      ],
-      "description": "Une sélection de photographies sportives et événementielles, portée par l’énergie, le mouvement et l’intensité de l’instant."
+      ]
     },
     {
       "titre": "Sports",
       "sujet": "Sport · Photographie",
-      "cover": "images/Sports/Football-americain/DSCF3722.webp",
+      "cover": "images/Sports/Badminton/DSCF0102.webp",
       "photos": [],
       "children": [
         {
           "titre": "Badminton",
           "sujet": "Sport · Photographie",
-          "cover": "",
-          "photos": [],
-          "description": "Vitesse, précision et réflexes : le badminton saisi dans le rythme des échanges et l’engagement des joueurs."
+          "cover": "images/Sports/Badminton/DSCF0102.webp",
+          "photos": [
+            "images/Sports/Badminton/DSCF0102.webp",
+            "images/Sports/Badminton/DSCF0483.webp",
+            "images/Sports/Badminton/DSCF0646.webp",
+            "images/Sports/Badminton/DSCF0872.webp",
+            "images/Sports/Badminton/DSCF0946.webp",
+            "images/Sports/Badminton/DSCF0959.webp",
+            "images/Sports/Badminton/DSCF0966.webp",
+            "images/Sports/Badminton/DSCF5505.webp",
+            "images/Sports/Badminton/DSCF5506.webp",
+            "images/Sports/Badminton/DSCF5527.webp",
+            "images/Sports/Badminton/DSCF5640.webp",
+            "images/Sports/Badminton/DSCF5663.webp",
+            "images/Sports/Badminton/DSCF5724.webp",
+            "images/Sports/Badminton/DSCF5859.webp",
+            "images/Sports/Badminton/DSCF5901.webp",
+            "images/Sports/Badminton/DSCF5955.webp",
+            "images/Sports/Badminton/DSCF5965.webp",
+            "images/Sports/Badminton/DSCF6250.webp",
+            "images/Sports/Badminton/DSCF6252.webp",
+            "images/Sports/Badminton/DSCF6258.webp",
+            "images/Sports/Badminton/DSCF6262.webp",
+            "images/Sports/Badminton/DSCF6265.webp",
+            "images/Sports/Badminton/DSCF6316.webp",
+            "images/Sports/Badminton/DSCF7438.webp"
+          ]
         },
         {
           "titre": "Football",
           "sujet": "Sport · Photographie",
           "cover": "",
-          "photos": [],
-          "description": "L’énergie du terrain, les duels et les émotions du jeu, au plus près de l’action."
+          "photos": []
         },
         {
           "titre": "Football Americain",
@@ -152,15 +170,13 @@
             "images/Sports/Football-americain/DSCF4187.webp",
             "images/Sports/Football-americain/DSCF4190.webp",
             "images/Sports/Football-americain/DSCF4202.webp"
-          ],
-          "description": "Puissance, stratégie et impacts : immersion au cœur du football américain et de ses moments forts."
+          ]
         },
         {
           "titre": "Sport Automobile",
           "sujet": "Sport · Photographie",
           "cover": "",
-          "photos": [],
-          "description": "La vitesse, les trajectoires et la mécanique en action, avec toute l’intensité des sports automobiles."
+          "photos": []
         },
         {
           "titre": "Tennis",
@@ -184,8 +200,7 @@
             "images/Sports/Tennis/DSCF1957.webp",
             "images/Sports/Tennis/DSCF2952.webp",
             "images/Sports/Tennis/DSCF2975.webp"
-          ],
-          "description": "Concentration, déplacements et frappes décisives : le tennis raconté au fil des échanges."
+          ]
         },
         {
           "titre": "Volleyball",
@@ -198,11 +213,9 @@
             "images/Sports/Volleyball/DSCF2950.webp",
             "images/Sports/Volleyball/DSCF3698.webp",
             "images/Sports/Volleyball/Volley%20Reception.webp"
-          ],
-          "description": "Détente, réceptions et attaques : des images au cœur du jeu et de la cohésion collective."
+          ]
         }
-      ],
-      "description": "L’intensité du sport en images : gestes décisifs, engagement des athlètes et émotions au cœur de l’action."
+      ]
     },
     {
       "titre": "Voyages",
@@ -222,8 +235,7 @@
             "images/Voyages/Londres/DSCF4855.jpg",
             "images/Voyages/Londres/DSCF4857-2.jpg",
             "images/Voyages/Londres/DSCF4861.jpg"
-          ],
-          "description": "Une balade photographique dans Londres, entre architecture emblématique, rues animées et détails du quotidien."
+          ]
         },
         {
           "titre": "Marrakech",
@@ -245,8 +257,7 @@
             "images/Voyages/Marrakech/DSCF3716.jpg",
             "images/Voyages/Marrakech/DSCF3722.jpg",
             "images/Voyages/Marrakech/nourriture-maroc-ps.jpg"
-          ],
-          "description": "Couleurs, marchés, architecture et scènes de rue : un aperçu de l’atmosphère vibrante de Marrakech."
+          ]
         },
         {
           "titre": "Rome",
@@ -278,25 +289,9 @@
             "images/Voyages/Rome/DSCF4316.jpg",
             "images/Voyages/Rome/DSCF4318.jpg",
             "images/Voyages/Rome/DSCF4364.jpg"
-          ],
-          "description": "Un regard sur Rome, entre patrimoine antique, architecture remarquable et vie quotidienne."
+          ]
         }
-      ],
-      "description": "Des villes aux ambiances singulières, des détails inattendus et des rencontres : explorer le monde à travers l’objectif."
-    },
-    {
-      "titre": "Divers",
-      "sujet": "Photographie · Autres séries",
-      "description": "Une sélection d’images variées, de moments spontanés et de sujets qui ne rentrent dans aucune catégorie précise.",
-      "cover": "",
-      "photos": []
-    },
-    {
-      "titre": "Portraits",
-      "sujet": "Portrait · Photographie",
-      "description": "Des portraits qui cherchent à saisir une expression, une personnalité ou un instant naturel.",
-      "cover": "",
-      "photos": []
+      ]
     }
   ]
 }
