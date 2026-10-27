@@ -166,10 +166,13 @@
     .featured-copy p, .about-copy p { color:var(--ink-soft); margin-top:16px; max-width:48ch; }
     .text-link { display:inline-block; margin-top:22px; color:var(--ink); text-decoration:none; border-bottom:1px solid var(--accent); padding-bottom:4px; font-size:.82rem; }
     .text-link:hover { color:var(--accent); }
-    body.album-standalone .topbar, body.album-standalone .hero, body.album-standalone #travaux, body.album-standalone #album-marquee, body.album-standalone #apropos, body.album-standalone footer { display:none !important; }
+    body.album-standalone .hero, body.album-standalone #travaux { display:none !important; }
+    body.album-standalone .topbar { padding-top:18px; padding-bottom:18px; }
     body.album-standalone #photo-view { display:block !important; padding-bottom:48px; }
-    body.album-standalone .btn-back { display:none; }
+    body.album-standalone .btn-back { display:inline-flex; padding:12px 0 0; font-size:1rem; letter-spacing:0; text-transform:none; }
     body.album-standalone .wrap { max-width:1180px; }
+    body.album-standalone #album-marquee { display:block; }
+    body.album-standalone #apropos, body.album-standalone footer { display:block; }
     .about-section { display:grid; grid-template-columns:.7fr 1.3fr; gap:48px; padding:70px 0 84px; border-top:1px solid var(--line); align-items:start; }
     .about-mark { font-family:'Fraunces',serif; font-size:clamp(3rem,7vw,5.5rem); line-height:1; color:var(--accent); }
     .photo-meta { display:flex; flex-wrap:wrap; gap:7px 14px; margin-top:10px; color:var(--ink-soft); font-size:.76rem; letter-spacing:.02em; }
@@ -559,7 +562,7 @@
     </section>
 
     <section id="photo-view">
-      <button class="btn-back" onclick="fermerAlbum()"><span class="arrow">‹</span> Toutes les séries</button>
+      <button class="btn-back" onclick="revenirEnArriereAlbum()" aria-label="Revenir en arrière"><span class="arrow">←</span> Retour</button>
       <div class="album-header">
         <h2 id="current-album-title">Titre</h2>
         <p id="current-album-sub"></p>
@@ -953,6 +956,14 @@
       photoView.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
+    function revenirEnArriereAlbum() {
+      if (window.history.length > 1 && document.referrer && new URL(document.referrer).origin === window.location.origin) {
+        window.history.back();
+      } else {
+        window.location.href = "./";
+      }
+    }
+
     function fermerAlbum() {
       photoView.style.display = "none";
       albumMarquee.classList.remove("visible");
@@ -1082,6 +1093,7 @@
             document.body.classList.add("album-standalone");
             if (found.parents.length === 0) ouvrirAlbum(found.albumIndex);
             else ouvrirSousAlbum(found.album);
+            albumMarquee.classList.add("visible");
             window.scrollTo(0, 0);
           }
         }
