@@ -1053,7 +1053,7 @@
 
     async function chargerPortfolio() {
       try {
-        const response = await fetch("images-manifest.json?v=" + Date.now(), { cache: "no-store" });
+        const response = await fetch("images-manifest.json", { cache: "no-cache" });
         if (!response.ok) throw new Error("Le manifeste du portfolio est indisponible.");
         const data = await response.json();
         if (!data || !Array.isArray(data.albums)) throw new Error("Format de manifeste invalide.");
