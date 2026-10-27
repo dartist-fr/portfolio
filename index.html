@@ -776,11 +776,10 @@
       marqueeDragStartX = event.clientX;
       marqueeDragStartScroll = albumMarquee.scrollLeft;
       albumMarquee.classList.add("dragging");
-      if (event.pointerType === "mouse") {
-        try { albumMarquee.setPointerCapture(event.pointerId); } catch (_) {}
-      }
+      // Ne pas capturer le pointeur sur le conteneur : cela détourne la cible
+      // du clic et empêche le bouton de vignette de recevoir son événement.
     });
-    albumMarquee.addEventListener("pointermove", (event) => {
+    window.addEventListener("pointermove", (event) => {
       if (!marqueePointerDown) return;
       const distance = event.clientX - marqueeDragStartX;
       if (Math.abs(distance) > 5) marqueeDragged = true;
@@ -791,9 +790,8 @@
       albumMarquee.classList.remove("dragging");
       if (marqueeDragged) setTimeout(() => { marqueeDragged = false; }, 80);
     }
-    albumMarquee.addEventListener("pointerup", terminerGlissementMenu);
-    albumMarquee.addEventListener("pointercancel", terminerGlissementMenu);
-    albumMarquee.addEventListener("lostpointercapture", terminerGlissementMenu);
+    window.addEventListener("pointerup", terminerGlissementMenu);
+    window.addEventListener("pointercancel", terminerGlissementMenu);
     albumMarquee.addEventListener("mouseenter", () => { marqueePaused = true; });
     albumMarquee.addEventListener("mouseleave", () => { marqueePaused = false; });
     albumMarquee.addEventListener("focusin", () => { marqueePaused = true; });
