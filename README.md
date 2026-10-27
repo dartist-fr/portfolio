@@ -2,7 +2,7 @@
 
 Portfolio de **dartist.**, photographe depuis 2022. Le site rassemble des séries consacrées au sport, aux événements, aux voyages et aux instants du quotidien.
 
-🌐 **Site en ligne :** https://dartist-fr.github.io/portfolio
+🌐 **Site en ligne :** https://dartist-fr.github.io/portfolio  
 📷 **Instagram :** [@dartist_photography](https://www.instagram.com/dartist_photography/)  
 💻 **Dépôt GitHub :** https://github.com/dartist-fr/portfolio
 
