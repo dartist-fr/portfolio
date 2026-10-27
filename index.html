@@ -166,6 +166,10 @@
     .featured-copy p, .about-copy p { color:var(--ink-soft); margin-top:16px; max-width:48ch; }
     .text-link { display:inline-block; margin-top:22px; color:var(--ink); text-decoration:none; border-bottom:1px solid var(--accent); padding-bottom:4px; font-size:.82rem; }
     .text-link:hover { color:var(--accent); }
+    body.album-standalone .topbar, body.album-standalone .hero, body.album-standalone #travaux, body.album-standalone #album-marquee, body.album-standalone #apropos, body.album-standalone footer { display:none !important; }
+    body.album-standalone #photo-view { display:block !important; padding-bottom:48px; }
+    body.album-standalone .btn-back { display:none; }
+    body.album-standalone .wrap { max-width:1180px; }
     .about-section { display:grid; grid-template-columns:.7fr 1.3fr; gap:48px; padding:70px 0 84px; border-top:1px solid var(--line); align-items:start; }
     .about-mark { font-family:'Fraunces',serif; font-size:clamp(3rem,7vw,5.5rem); line-height:1; color:var(--accent); }
     .photo-meta { display:flex; flex-wrap:wrap; gap:7px 14px; margin-top:10px; color:var(--ink-soft); font-size:.76rem; letter-spacing:.02em; }
@@ -711,7 +715,9 @@
             const wasDragged = marqueeDragged;
             marqueeDragged = false;
             if (wasDragged) return;
-            if (parents.length === 0) {
+            if (!album.children || album.children.length === 0) {
+              window.location.href = "?album=" + encodeURIComponent(album.titre);
+            } else if (parents.length === 0) {
               const index = portfolioData.indexOf(album);
               if (index >= 0) ouvrirAlbum(index);
             } else {
@@ -822,8 +828,28 @@
 
     }
 
+    function trouverAlbumParChemin(titre) {
+      let result = null;
+      function parcourir(albums, parents = []) {
+        for (const album of albums || []) {
+          if (album.titre === titre) {
+            result = { album, parents, albumIndex: parents.length === 0 ? portfolioData.indexOf(album) : -1 };
+            return true;
+          }
+          if (album.children && parcourir(album.children, [...parents, album.titre])) return true;
+        }
+        return false;
+      }
+      parcourir(portfolioData);
+      return result;
+    }
+
     function ouvrirAlbum(index) {
       const album = portfolioData[index];
+      if (album && (!album.children || album.children.length === 0) && !new URLSearchParams(window.location.search).has("album")) {
+        window.location.href = "?album=" + encodeURIComponent(album.titre);
+        return;
+      }
       currentAlbumTitle.textContent = album.titre;
       currentAlbumSub.textContent = album.sujet + (album.children ? " · " + album.children.length + " sous-séries" : album.photos.length ? " · " + album.photos.length + " clichés" : " · Série à compléter");
       currentAlbumDescription.textContent = album.description || "";
@@ -836,7 +862,10 @@
         album.children.forEach((child, childIndex) => {
           const card = document.createElement("button");
           card.className = "album-card";
-          card.onclick = () => ouvrirSousAlbum(child);
+          card.onclick = () => {
+            if (!child.children || child.children.length === 0) window.location.href = "?album=" + encodeURIComponent(child.titre);
+            else ouvrirSousAlbum(child);
+          };
           const frame = document.createElement("div"); frame.className = "album-frame";
           if (child.cover) {
             const image = document.createElement("img"); image.src = child.cover; image.alt = "Série : " + child.titre; image.loading = "lazy";
@@ -887,7 +916,10 @@
         child.children.forEach((nested, nestedIndex) => {
           const card = document.createElement("button");
           card.className = "album-card";
-          card.onclick = () => ouvrirSousAlbum(nested);
+          card.onclick = () => {
+            if (!nested.children || nested.children.length === 0) window.location.href = "?album=" + encodeURIComponent(nested.titre);
+            else ouvrirSousAlbum(nested);
+          };
           const frame = document.createElement("div"); frame.className = "album-frame";
           if (nested.cover) {
             const image = document.createElement("img"); image.src = nested.cover; image.alt = "Série : " + nested.titre; image.loading = "lazy";
@@ -1043,6 +1075,16 @@
 
         afficherAlbums();
         afficherMenuDefilant();
+        const requestedAlbum = new URLSearchParams(window.location.search).get("album");
+        if (requestedAlbum) {
+          const found = trouverAlbumParChemin(requestedAlbum);
+          if (found) {
+            document.body.classList.add("album-standalone");
+            if (found.parents.length === 0) ouvrirAlbum(found.albumIndex);
+            else ouvrirSousAlbum(found.album);
+            window.scrollTo(0, 0);
+          }
+        }
       } catch (error) {
         albumsView.innerHTML = '<p class="empty-series">Impossible de charger les séries pour le moment. Réessayez dans quelques instants.</p>';
         console.error("Chargement du portfolio :", error);
