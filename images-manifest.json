@@ -23,7 +23,7 @@
     {
       "titre": "France",
       "sujet": "France · Photographie",
-      "cover": "images/France/Avignon/DSCF0046.webp",
+      "cover": "images/France/Montagne/DSCF7893.webp",
       "photos": [],
       "children": [
         {
@@ -48,7 +48,7 @@
         {
           "titre": "Montagne",
           "sujet": "France · Photographie",
-          "cover": "images/France/Montagne/2023_0418_13193500%20%282%29.webp",
+          "cover": "images/France/Montagne/DSCF7893.webp",
           "photos": [
             "images/France/Montagne/2023_0418_13193500%20%282%29.webp",
             "images/France/Montagne/2023_0418_13321900%20%281%29.webp",
@@ -102,7 +102,7 @@
     {
       "titre": "Red Bull",
       "sujet": "Sport · Événementiel",
-      "cover": "images/Red%20Bull/DSCF6593.webp",
+      "cover": "images/Red%20Bull/DSCF8807.webp",
       "photos": [
         "images/Red%20Bull/DSCF6593.webp",
         "images/Red%20Bull/DSCF7086.webp",
@@ -293,7 +293,7 @@
         {
           "titre": "Rome",
           "sujet": "Voyage · Photographie",
-          "cover": "images/Voyages/Rome/DSCF3613.jpg",
+          "cover": "images/Voyages/Rome/DSCF4121.jpg",
           "photos": [
             "images/Voyages/Rome/DSCF3613.jpg",
             "images/Voyages/Rome/DSCF3684.jpg",
