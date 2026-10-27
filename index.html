@@ -811,10 +811,13 @@
       }
     });
     function terminerGlissementCarousel() {
+      const aBouge = carouselDragged;
       carouselPointerDown = false;
       albumMarquee.classList.remove("dragging");
       carouselPauseUntil = performance.now() + 700;
-      if (carouselDragged) setTimeout(() => { carouselDragged = false; }, 100);
+      // Après un vrai glissement, ignorer le clic synthétisé par le navigateur.
+      // Après un simple clic, laisser le bouton ouvrir l'album normalement.
+      if (aBouge) setTimeout(() => { carouselDragged = false; }, 250);
     }
     albumMarquee.addEventListener("pointerup", terminerGlissementCarousel);
     albumMarquee.addEventListener("pointercancel", terminerGlissementCarousel);
