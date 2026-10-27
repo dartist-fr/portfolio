@@ -15,8 +15,9 @@ Portfolio de **dartist.**, photographe depuis 2022. Le site rassemble des série
 - **Recherche de séries** depuis la page d’accueil.
 - **Interface responsive**, adaptée aux ordinateurs, tablettes et téléphones.
 - **Thème clair ou sombre**.
-- **Carrousel de séries** avec défilement automatique et navigation à la souris ou au doigt.
+- **Carrousel de séries cliquable** en bas de page : défilement automatique, glissement à la souris ou au doigt, et clic sur une vignette pour ouvrir la série ou sous-série correspondante.
 - **Favicon personnalisé** aux couleurs de dartist.
+- **Descriptions personnalisées par album** : chaque série ou sous-série peut afficher un texte sous son titre.
 - **Métadonnées facultatives** pour afficher le lieu, la date et le contexte d’une photo.
 
 ## Organisation du contenu
@@ -24,6 +25,22 @@ Portfolio de **dartist.**, photographe depuis 2022. Le site rassemble des série
 Les albums et les photos sont pilotés par le fichier `images-manifest.json`. Il décrit la structure des albums et les chemins vers les images utilisées par le site.
 
 Pour ajouter ou réorganiser des séries, modifie le manifeste en respectant sa structure JSON et les chemins des fichiers présents dans le dépôt. Vérifie ensuite le site après la publication par GitHub Pages.
+
+### Ajouter une description à un album
+
+Dans l’objet correspondant à l’album ou à la sous-série de `images-manifest.json`, ajoute le champ facultatif `description`. Le texte s’affiche sous le titre lorsque l’album est ouvert. Les albums sans description continuent de fonctionner normalement.
+
+```json
+{
+  "titre": "Red Bull",
+  "description": "Une immersion au cœur de l’univers Red Bull, entre sport et énergie.",
+  "sujet": "Photographie sportive",
+  "cover": "images/Red Bull/cover.webp",
+  "photos": []
+}
+```
+
+Cet exemple est illustratif : conserve les chemins et les photos déjà présents dans ton manifeste. Ajoute simplement la propriété `description` à l’objet existant.
 
 > Les chemins des images dans le manifeste doivent correspondre exactement aux noms et à l’emplacement des fichiers, y compris les majuscules, minuscules et extensions.
 
