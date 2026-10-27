@@ -20,6 +20,15 @@ Portfolio de **dartist.**, photographe depuis 2022. Le site rassemble des série
 - **Descriptions personnalisées par album** : chaque série ou sous-série peut afficher un texte sous son titre.
 - **Métadonnées facultatives** pour afficher le lieu, la date et le contexte d’une photo.
 
+## Organisation du dépôt
+
+- `index.html` : page du site.
+- `images/` : photos classées par séries et sous-séries.
+- `images-manifest.json` : données des albums utilisées par le site.
+- `scripts/` : scripts d’automatisation et curseur personnalisé.
+- `docs/README-AUTOMATISATION.md` : guide pour ajouter des séries et automatiser le portfolio.
+- `.github/workflows/` : automatisations GitHub Actions.
+
 ## Organisation du contenu
 
 Les albums et les photos sont pilotés par le fichier `images-manifest.json`. Il décrit la structure des albums et les chemins vers les images utilisées par le site.
