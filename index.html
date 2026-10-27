@@ -739,7 +739,7 @@
         const delta = Math.min(time - marqueeLastTime, 40);
         marqueeLastTime = time;
         if (!marqueePaused && !marqueePointerDown && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          albumMarquee.scrollLeft += delta * 0.025;
+          albumMarquee.scrollLeft += delta * 0.06;
           const loopWidth = marqueeTrack.scrollWidth / 2;
           if (loopWidth > 0 && albumMarquee.scrollLeft >= loopWidth) albumMarquee.scrollLeft -= loopWidth;
         }
