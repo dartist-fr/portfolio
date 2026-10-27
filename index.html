@@ -266,6 +266,51 @@
     .album-count { font-size: 0.82rem; color: var(--ink-soft); white-space: nowrap; }
 
     /* --- Photo view --- */
+    .album-marquee {
+      display: none;
+      overflow: hidden;
+      width: 100%;
+      margin: 48px 0 72px;
+      padding: 20px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+      mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+    }
+    .album-marquee.visible { display: block; }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: album-marquee-scroll 38s linear infinite;
+      will-change: transform;
+    }
+    .album-marquee:hover .marquee-track,
+    .album-marquee:focus-within .marquee-track { animation-play-state: paused; }
+    .marquee-group { display: flex; flex-shrink: 0; align-items: center; }
+    .marquee-album {
+      display: inline-flex;
+      align-items: center;
+      gap: 22px;
+      padding: 0 28px;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font: 500 clamp(1.1rem, 2.4vw, 1.8rem)/1.2 'Fraunces', serif;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: color .2s;
+    }
+    .marquee-album:hover, .marquee-album:focus-visible { color: var(--accent); }
+    .marquee-separator { color: var(--accent); font-family: 'Inter', sans-serif; font-size: .8rem; }
+    @keyframes album-marquee-scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .marquee-track { animation: none; }
+      .album-marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+    }
+
     #photo-view { display: none; padding-bottom: 90px; }
     .btn-back {
       display: inline-flex;
@@ -482,6 +527,10 @@
       <div id="photos-container" class="photos-grid"></div>
     </section>
 
+    <section id="album-marquee" class="album-marquee" aria-label="Découvrir les autres séries">
+      <div class="marquee-track" id="marquee-track"></div>
+    </section>
+
     <section id="apropos" class="about-section">
       <div>
         <div class="eyebrow">Derrière l'objectif</div>
@@ -590,6 +639,33 @@
       return null;
     }
 
+    const albumMarquee = document.getElementById("album-marquee");
+    const marqueeTrack = document.getElementById("marquee-track");
+
+    function afficherMenuDefilant() {
+      marqueeTrack.innerHTML = "";
+      if (!portfolioData.length) return;
+      for (let repetition = 0; repetition < 2; repetition++) {
+        const group = document.createElement("div");
+        group.className = "marquee-group";
+        if (repetition === 1) group.setAttribute("aria-hidden", "true");
+        portfolioData.forEach((album, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "marquee-album";
+          button.textContent = album.titre;
+          button.setAttribute("aria-label", "Ouvrir la série " + album.titre);
+          button.addEventListener("click", () => ouvrirAlbum(index));
+          const separator = document.createElement("span");
+          separator.className = "marquee-separator";
+          separator.textContent = "✳";
+          separator.setAttribute("aria-hidden", "true");
+          group.append(button, separator);
+        });
+        marqueeTrack.appendChild(group);
+      }
+    }
+
     function afficherAlbums() {
       albumsView.innerHTML = "";
       const query = seriesSearch.value.trim().toLocaleLowerCase("fr");
@@ -688,6 +764,7 @@
 
       travaux.style.display = "none";
       photoView.style.display = "block";
+      albumMarquee.classList.add("visible");
       photoView.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -731,11 +808,13 @@
         photosContainer.appendChild(item);
       });
       observerNouveauxElements(photosContainer);
+      albumMarquee.classList.add("visible");
       photoView.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function fermerAlbum() {
       photoView.style.display = "none";
+      albumMarquee.classList.remove("visible");
       travaux.style.display = "block";
     }
 
@@ -854,6 +933,7 @@
         photoMetadata = data.photoMetadata || {};
 
         afficherAlbums();
+        afficherMenuDefilant();
       } catch (error) {
         albumsView.innerHTML = '<p class="empty-series">Impossible de charger les séries pour le moment. Réessayez dans quelques instants.</p>';
         console.error("Chargement du portfolio :", error);
