@@ -767,7 +767,7 @@
       const count = cards.length;
       if (!count) return;
       const cardWidth = cards[0].getBoundingClientRect().width || 180;
-      const radius = Math.max(250, Math.min(520, (cardWidth * count) / (2 * Math.PI) * 1.8));
+      const radius = Math.max(320, Math.min(650, (cardWidth * count) / (2 * Math.PI) * 2.5));
       marqueeTrack.style.setProperty("--radius", radius + "px");
       marqueeTrack.style.transform = "translateZ(" + (-radius) + "px) rotateY(" + carouselRotation + "deg)";
     }
