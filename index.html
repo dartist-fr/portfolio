@@ -172,7 +172,8 @@
     body.album-standalone .btn-back { display:inline-flex; padding:12px 0 0; font-size:1rem; letter-spacing:0; text-transform:none; }
     body.album-standalone .wrap { max-width:1180px; }
     body.album-standalone #album-marquee { display:block; }
-    body.album-standalone #apropos, body.album-standalone footer { display:block; }
+    body.album-standalone #apropos { display:none !important; }
+    body.album-standalone footer { display:flex; }
     .about-section { display:grid; grid-template-columns:.7fr 1.3fr; gap:48px; padding:70px 0 84px; border-top:1px solid var(--line); align-items:start; }
     .about-mark { font-family:'Fraunces',serif; font-size:clamp(3rem,7vw,5.5rem); line-height:1; color:var(--accent); }
     .photo-meta { display:flex; flex-wrap:wrap; gap:7px 14px; margin-top:10px; color:var(--ink-soft); font-size:.76rem; letter-spacing:.02em; }
@@ -527,7 +528,7 @@
   <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
   <div class="wrap">
     <div class="topbar">
-      <div class="wordmark">dartist<span>.</span></div>
+      <a class="wordmark" href="./" aria-label="Retour à l’accueil">dartist<span>.</span></a>
       <div class="topbar-actions">
         <nav class="topnav">
           <a href="#travaux">Travaux</a>
