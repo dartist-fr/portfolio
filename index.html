@@ -270,9 +270,9 @@
     .album-marquee {
       display: none;
       position: relative;
-      width: 100%;
+      width: min(100%, 900px);
       height: clamp(330px, 42vw, 470px);
-      margin: 42px 0 68px;
+      margin: 42px auto 68px;
       overflow: hidden;
       perspective: 1100px;
       perspective-origin: 50% 44%;
@@ -299,7 +299,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      width: clamp(135px, 17vw, 205px);
+      width: clamp(120px, 13vw, 165px);
       padding: 0;
       border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
       background: var(--paper-2);
@@ -354,8 +354,8 @@
       pointer-events: none;
     }
     @media (max-width: 640px) {
-      .album-marquee { height: 330px; margin: 28px 0 48px; perspective: 850px; }
-      .marquee-album { width: 145px; }
+      .album-marquee { width: min(100%, 520px); height: 330px; margin: 28px auto 48px; perspective: 850px; }
+      .marquee-album { width: 130px; }
       .marquee-album img { height: 160px; }
       .marquee-album span { font-size: .82rem; padding: 0 10px 11px; }
       .carousel-hint { bottom: 9px; font-size: .6rem; }
@@ -767,7 +767,7 @@
       const count = cards.length;
       if (!count) return;
       const cardWidth = cards[0].getBoundingClientRect().width || 180;
-      const radius = Math.max(190, Math.min(390, (cardWidth * count) / (2 * Math.PI) * 1.18));
+      const radius = Math.max(250, Math.min(520, (cardWidth * count) / (2 * Math.PI) * 1.8));
       marqueeTrack.style.setProperty("--radius", radius + "px");
       marqueeTrack.style.transform = "translateZ(" + (-radius) + "px) rotateY(" + carouselRotation + "deg)";
     }
