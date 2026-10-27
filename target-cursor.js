@@ -28,7 +28,7 @@
       state.x += state.v * h;
     }
   }
-  function findTarget(node) { return node?.closest?.('.cursor-target') || null; }
+  function findTarget(node) { return node?.closest?.('.cursor-target,.album-card,.photo-item,.featured-photo,.text-link,.topnav a,.theme-toggle,.lb-nav,.lb-close,.lb-fullscreen,.wordmark,.btn-back') || null; }
   function lockOn(next) {
     if (next === target) return;
     target = next;
