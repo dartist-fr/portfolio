@@ -268,47 +268,70 @@
     /* --- Photo view --- */
     .album-marquee {
       display: none;
-      overflow: hidden;
+      position: relative;
+      overflow-x: auto;
+      overflow-y: hidden;
       width: 100%;
       margin: 48px 0 72px;
-      padding: 20px 0;
+      padding: 18px 0 22px;
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
-      mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+      cursor: grab;
+      touch-action: pan-x pan-y;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+      mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
     }
+    .album-marquee::-webkit-scrollbar { display: none; }
     .album-marquee.visible { display: block; }
+    .album-marquee.dragging { cursor: grabbing; user-select: none; }
     .marquee-track {
       display: flex;
+      align-items: stretch;
+      gap: 14px;
       width: max-content;
-      animation: album-marquee-scroll 38s linear infinite;
-      will-change: transform;
+      padding: 0 22px;
     }
-    .album-marquee:hover .marquee-track,
-    .album-marquee:focus-within .marquee-track { animation-play-state: paused; }
-    .marquee-group { display: flex; flex-shrink: 0; align-items: center; }
     .marquee-album {
-      display: inline-flex;
-      align-items: center;
-      gap: 22px;
-      padding: 0 28px;
+      display: flex;
+      flex: 0 0 clamp(150px, 18vw, 220px);
+      flex-direction: column;
+      gap: 10px;
+      padding: 0;
       border: 0;
       background: transparent;
       color: var(--ink);
-      font: 500 clamp(1.1rem, 2.4vw, 1.8rem)/1.2 'Fraunces', serif;
-      white-space: nowrap;
+      text-align: left;
       cursor: pointer;
-      transition: color .2s;
+      user-select: none;
     }
-    .marquee-album:hover, .marquee-album:focus-visible { color: var(--accent); }
-    .marquee-separator { color: var(--accent); font-family: 'Inter', sans-serif; font-size: .8rem; }
-    @keyframes album-marquee-scroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
+    .marquee-album img {
+      display: block;
+      width: 100%;
+      height: clamp(100px, 11vw, 140px);
+      object-fit: cover;
+      background: var(--paper-2);
+      transition: transform .25s, opacity .25s;
+      pointer-events: none;
     }
-    @media (prefers-reduced-motion: reduce) {
-      .marquee-track { animation: none; }
-      .album-marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+    .marquee-album:hover img { transform: scale(.97); opacity: .85; }
+    .marquee-album span {
+      max-width: 100%;
+      overflow: hidden;
+      color: var(--ink);
+      font: 500 .9rem/1.3 'Fraunces', serif;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .marquee-album:hover span, .marquee-album:focus-visible span { color: var(--accent); }
+    .marquee-album:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    @media (max-width: 640px) {
+      .album-marquee { margin: 32px 0 48px; padding: 14px 0 18px; }
+      .marquee-track { gap: 12px; padding: 0 18px; }
+      .marquee-album { flex-basis: 145px; }
+      .marquee-album img { height: 100px; }
+      .marquee-album span { font-size: .82rem; }
     }
 
     #photo-view { display: none; padding-bottom: 90px; }
@@ -641,30 +664,119 @@
 
     const albumMarquee = document.getElementById("album-marquee");
     const marqueeTrack = document.getElementById("marquee-track");
+    let marqueeFrame = null;
+    let marqueeLastTime = 0;
+    let marqueePaused = false;
+    let marqueePointerDown = false;
+    let marqueeDragStartX = 0;
+    let marqueeDragStartScroll = 0;
+    let marqueeDragged = false;
+
+    function obtenirAlbumsNavigables() {
+      const items = [];
+      function parcourir(albums, parents = []) {
+        albums.forEach((album) => {
+          // Les dossiers qui ne contiennent que des sous-albums ne sont pas affichés.
+          if (Array.isArray(album.children) && album.children.length) {
+            parcourir(album.children, [...parents, album.titre]);
+            return;
+          }
+          const image = album.cover || (album.photos && album.photos[0]) || "";
+          if (!image) return;
+          items.push({ album, image, parents });
+        });
+      }
+      parcourir(portfolioData);
+      return items;
+    }
 
     function afficherMenuDefilant() {
       marqueeTrack.innerHTML = "";
-      if (!portfolioData.length) return;
+      const items = obtenirAlbumsNavigables();
+      if (!items.length) return;
+
+      // Deux copies identiques permettent une boucle continue sans saut visible.
       for (let repetition = 0; repetition < 2; repetition++) {
-        const group = document.createElement("div");
-        group.className = "marquee-group";
-        if (repetition === 1) group.setAttribute("aria-hidden", "true");
-        portfolioData.forEach((album, index) => {
+        items.forEach(({ album, image, parents }, index) => {
           const button = document.createElement("button");
           button.type = "button";
           button.className = "marquee-album";
-          button.textContent = album.titre;
+          button.draggable = false;
           button.setAttribute("aria-label", "Ouvrir la série " + album.titre);
-          button.addEventListener("click", () => ouvrirAlbum(index));
-          const separator = document.createElement("span");
-          separator.className = "marquee-separator";
-          separator.textContent = "✳";
-          separator.setAttribute("aria-hidden", "true");
-          group.append(button, separator);
+          if (repetition === 1) button.setAttribute("tabindex", "-1");
+          const img = document.createElement("img");
+          img.src = image;
+          img.alt = "";
+          img.loading = "lazy";
+          img.draggable = false;
+          img.onerror = () => button.remove();
+          const title = document.createElement("span");
+          title.textContent = album.titre;
+          button.append(img, title);
+          button.addEventListener("click", () => {
+            if (marqueeDragged) return;
+            if (parents.length === 0) {
+              const index = portfolioData.indexOf(album);
+              if (index >= 0) ouvrirAlbum(index);
+            } else {
+              ouvrirSousAlbum(album);
+            }
+          });
+          marqueeTrack.appendChild(button);
         });
-        marqueeTrack.appendChild(group);
       }
+      requestAnimationFrame(() => {
+        albumMarquee.scrollLeft = 0;
+        demarrerDefilementMenu();
+      });
     }
+
+    function demarrerDefilementMenu() {
+      if (marqueeFrame) cancelAnimationFrame(marqueeFrame);
+      marqueeLastTime = 0;
+      const step = (time) => {
+        if (!marqueeLastTime) marqueeLastTime = time;
+        const delta = Math.min(time - marqueeLastTime, 40);
+        marqueeLastTime = time;
+        if (!marqueePaused && !marqueePointerDown && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          albumMarquee.scrollLeft += delta * 0.025;
+          const loopWidth = marqueeTrack.scrollWidth / 2;
+          if (loopWidth > 0 && albumMarquee.scrollLeft >= loopWidth) albumMarquee.scrollLeft -= loopWidth;
+        }
+        marqueeFrame = requestAnimationFrame(step);
+      };
+      marqueeFrame = requestAnimationFrame(step);
+    }
+
+    albumMarquee.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      marqueePointerDown = true;
+      marqueeDragged = false;
+      marqueeDragStartX = event.clientX;
+      marqueeDragStartScroll = albumMarquee.scrollLeft;
+      albumMarquee.classList.add("dragging");
+      if (event.pointerType === "mouse") {
+        try { albumMarquee.setPointerCapture(event.pointerId); } catch (_) {}
+      }
+    });
+    albumMarquee.addEventListener("pointermove", (event) => {
+      if (!marqueePointerDown) return;
+      const distance = event.clientX - marqueeDragStartX;
+      if (Math.abs(distance) > 5) marqueeDragged = true;
+      if (marqueeDragged) albumMarquee.scrollLeft = marqueeDragStartScroll - distance;
+    });
+    function terminerGlissementMenu() {
+      marqueePointerDown = false;
+      albumMarquee.classList.remove("dragging");
+      if (marqueeDragged) setTimeout(() => { marqueeDragged = false; }, 80);
+    }
+    albumMarquee.addEventListener("pointerup", terminerGlissementMenu);
+    albumMarquee.addEventListener("pointercancel", terminerGlissementMenu);
+    albumMarquee.addEventListener("lostpointercapture", terminerGlissementMenu);
+    albumMarquee.addEventListener("mouseenter", () => { marqueePaused = true; });
+    albumMarquee.addEventListener("mouseleave", () => { marqueePaused = false; });
+    albumMarquee.addEventListener("focusin", () => { marqueePaused = true; });
+    albumMarquee.addEventListener("focusout", () => { marqueePaused = false; });
 
     function afficherAlbums() {
       albumsView.innerHTML = "";
