@@ -266,57 +266,71 @@
     .album-count { font-size: 0.82rem; color: var(--ink-soft); white-space: nowrap; }
 
     /* --- Photo view --- */
+    /* --- Circular carousel inspiré de React Bits : anneau 3D interactif --- */
     .album-marquee {
       display: none;
       position: relative;
-      overflow-x: auto;
-      overflow-y: hidden;
       width: 100%;
-      margin: 48px 0 72px;
-      padding: 18px 0 22px;
+      height: clamp(330px, 42vw, 470px);
+      margin: 42px 0 68px;
+      overflow: hidden;
+      perspective: 1100px;
+      perspective-origin: 50% 44%;
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
+      touch-action: pan-y;
       cursor: grab;
-      touch-action: pan-x pan-y;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
-      mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+      user-select: none;
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+      mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
     }
-    .album-marquee::-webkit-scrollbar { display: none; }
     .album-marquee.visible { display: block; }
-    .album-marquee.dragging { cursor: grabbing; user-select: none; }
+    .album-marquee.dragging { cursor: grabbing; }
     .marquee-track {
-      display: flex;
-      align-items: stretch;
-      gap: 14px;
-      width: max-content;
-      padding: 0 22px;
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      will-change: transform;
     }
     .marquee-album {
+      position: absolute;
+      top: 50%;
+      left: 50%;
       display: flex;
-      flex: 0 0 clamp(150px, 18vw, 220px);
       flex-direction: column;
       gap: 10px;
+      width: clamp(135px, 17vw, 205px);
       padding: 0;
-      border: 0;
-      background: transparent;
+      border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+      background: var(--paper-2);
       color: var(--ink);
       text-align: left;
       cursor: pointer;
       user-select: none;
+      transform: translate(-50%, -50%) rotateY(var(--angle, 0deg)) translateZ(var(--radius, 300px));
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      transition: border-color .25s, box-shadow .25s;
+      overflow: hidden;
+    }
+    .marquee-album:hover, .marquee-album:focus-visible {
+      border-color: var(--accent);
+      box-shadow: 0 16px 38px rgba(0,0,0,.18);
     }
     .marquee-album img {
       display: block;
       width: 100%;
-      height: clamp(100px, 11vw, 140px);
+      height: clamp(155px, 19vw, 225px);
       object-fit: cover;
       background: var(--paper-2);
-      transition: transform .25s, opacity .25s;
       pointer-events: none;
+      filter: saturate(.88);
+      transition: filter .25s, transform .35s;
     }
-    .marquee-album:hover img { transform: scale(.97); opacity: .85; }
+    .marquee-album:hover img { filter: saturate(1.08); transform: scale(1.025); }
     .marquee-album span {
+      display: block;
+      padding: 0 12px 13px;
       max-width: 100%;
       overflow: hidden;
       color: var(--ink);
@@ -325,13 +339,26 @@
       white-space: nowrap;
     }
     .marquee-album:hover span, .marquee-album:focus-visible span { color: var(--accent); }
-    .marquee-album:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    .marquee-album:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+    .carousel-hint {
+      position: absolute;
+      z-index: 2;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--ink-soft);
+      font-size: .68rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none;
+    }
     @media (max-width: 640px) {
-      .album-marquee { margin: 32px 0 48px; padding: 14px 0 18px; }
-      .marquee-track { gap: 12px; padding: 0 18px; }
-      .marquee-album { flex-basis: 145px; }
-      .marquee-album img { height: 100px; }
-      .marquee-album span { font-size: .82rem; }
+      .album-marquee { height: 330px; margin: 28px 0 48px; perspective: 850px; }
+      .marquee-album { width: 145px; }
+      .marquee-album img { height: 160px; }
+      .marquee-album span { font-size: .82rem; padding: 0 10px 11px; }
+      .carousel-hint { bottom: 9px; font-size: .6rem; }
     }
 
     #photo-view { display: none; padding-bottom: 90px; }
@@ -556,6 +583,7 @@
 
     <section id="album-marquee" class="album-marquee" aria-label="Découvrir les autres séries">
       <div class="marquee-track" id="marquee-track"></div>
+      <span class="carousel-hint" aria-hidden="true">Glisser pour explorer · Cliquer pour ouvrir</span>
     </section>
 
     <section id="apropos" class="about-section">
@@ -668,26 +696,27 @@
 
     const albumMarquee = document.getElementById("album-marquee");
     const marqueeTrack = document.getElementById("marquee-track");
-    let marqueeFrame = null;
-    let marqueeLastTime = 0;
-    let marqueePaused = false;
-    let marqueePointerDown = false;
-    let marqueeDragStartX = 0;
-    let marqueeDragStartScroll = 0;
-    let marqueeDragged = false;
+    let carouselFrame = null;
+    let carouselLastTime = 0;
+    let carouselRotation = 0;
+    let carouselVelocity = 0;
+    let carouselPointerDown = false;
+    let carouselStartX = 0;
+    let carouselStartRotation = 0;
+    let carouselDragged = false;
+    let carouselPauseUntil = 0;
+    const carouselReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     function obtenirAlbumsNavigables() {
       const items = [];
       function parcourir(albums, parents = []) {
         albums.forEach((album) => {
-          // Les dossiers qui ne contiennent que des sous-albums ne sont pas affichés.
           if (Array.isArray(album.children) && album.children.length) {
             parcourir(album.children, [...parents, album.titre]);
             return;
           }
           const image = album.cover || (album.photos && album.photos[0]) || "";
-          if (!image) return;
-          items.push({ album, image, parents });
+          if (image) items.push({ album, image, parents });
         });
       }
       parcourir(portfolioData);
@@ -699,88 +728,102 @@
       const items = obtenirAlbumsNavigables();
       if (!items.length) return;
 
-      // Deux copies identiques permettent une boucle continue sans saut visible.
-      for (let repetition = 0; repetition < 2; repetition++) {
-        items.forEach(({ album, image, parents }, index) => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "marquee-album";
-          button.draggable = false;
-          button.setAttribute("aria-label", "Ouvrir la série " + album.titre);
-          if (repetition === 1) button.setAttribute("tabindex", "-1");
-          const img = document.createElement("img");
-          img.src = image;
-          img.alt = "";
-          img.loading = "lazy";
-          img.draggable = false;
-          img.onerror = () => button.remove();
-          const title = document.createElement("span");
-          title.textContent = album.titre;
-          button.append(img, title);
-          button.addEventListener("click", () => {
-            if (marqueeDragged) return;
-            if (parents.length === 0) {
-              const index = portfolioData.indexOf(album);
-              if (index >= 0) ouvrirAlbum(index);
-            } else {
-              ouvrirSousAlbum(album);
-            }
-          });
-          marqueeTrack.appendChild(button);
+      marqueeTrack.style.setProperty("--carousel-count", items.length);
+      items.forEach(({ album, image, parents }, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "marquee-album";
+        button.draggable = false;
+        button.style.setProperty("--angle", (index * 360 / items.length) + "deg");
+        button.setAttribute("aria-label", "Ouvrir la série " + album.titre);
+        const img = document.createElement("img");
+        img.src = image;
+        img.alt = "";
+        img.loading = "lazy";
+        img.draggable = false;
+        img.onerror = () => button.remove();
+        const title = document.createElement("span");
+        title.textContent = album.titre;
+        button.append(img, title);
+        button.addEventListener("click", () => {
+          if (carouselDragged) return;
+          if (parents.length === 0) {
+            const indexAlbum = portfolioData.indexOf(album);
+            if (indexAlbum >= 0) ouvrirAlbum(indexAlbum);
+          } else {
+            ouvrirSousAlbum(album);
+          }
         });
-      }
+        marqueeTrack.appendChild(button);
+      });
       requestAnimationFrame(() => {
-        albumMarquee.scrollLeft = 0;
-        demarrerDefilementMenu();
+        positionnerCarousel();
+        demarrerCarousel();
       });
     }
 
-    function demarrerDefilementMenu() {
-      if (marqueeFrame) cancelAnimationFrame(marqueeFrame);
-      marqueeLastTime = 0;
+    function positionnerCarousel() {
+      const cards = marqueeTrack.querySelectorAll(".marquee-album");
+      const count = cards.length;
+      if (!count) return;
+      const cardWidth = cards[0].getBoundingClientRect().width || 180;
+      const radius = Math.max(190, Math.min(390, (cardWidth * count) / (2 * Math.PI) * 1.18));
+      marqueeTrack.style.setProperty("--radius", radius + "px");
+      marqueeTrack.style.transform = "translateZ(" + (-radius) + "px) rotateY(" + carouselRotation + "deg)";
+    }
+
+    function demarrerCarousel() {
+      if (carouselFrame) cancelAnimationFrame(carouselFrame);
+      carouselLastTime = 0;
       const step = (time) => {
-        if (!marqueeLastTime) marqueeLastTime = time;
-        const delta = Math.min(time - marqueeLastTime, 40);
-        marqueeLastTime = time;
-        if (!marqueePaused && !marqueePointerDown && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          albumMarquee.scrollLeft += delta * 0.06;
-          const loopWidth = marqueeTrack.scrollWidth / 2;
-          if (loopWidth > 0 && albumMarquee.scrollLeft >= loopWidth) albumMarquee.scrollLeft -= loopWidth;
+        if (!carouselLastTime) carouselLastTime = time;
+        const delta = Math.min(time - carouselLastTime, 40);
+        carouselLastTime = time;
+        if (!carouselPointerDown && !carouselReducedMotion.matches && time > carouselPauseUntil) {
+          carouselRotation += delta * 0.008 + carouselVelocity;
+          carouselVelocity *= 0.94;
+          if (Math.abs(carouselVelocity) < 0.002) carouselVelocity = 0;
         }
-        marqueeFrame = requestAnimationFrame(step);
+        positionnerCarousel();
+        carouselFrame = requestAnimationFrame(step);
       };
-      marqueeFrame = requestAnimationFrame(step);
+      carouselFrame = requestAnimationFrame(step);
     }
 
     albumMarquee.addEventListener("pointerdown", (event) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
-      marqueePointerDown = true;
-      marqueeDragged = false;
-      marqueeDragStartX = event.clientX;
-      marqueeDragStartScroll = albumMarquee.scrollLeft;
+      carouselPointerDown = true;
+      carouselDragged = false;
+      carouselStartX = event.clientX;
+      carouselStartRotation = carouselRotation;
+      carouselVelocity = 0;
       albumMarquee.classList.add("dragging");
-      if (event.pointerType === "mouse") {
-        try { albumMarquee.setPointerCapture(event.pointerId); } catch (_) {}
-      }
+      try { albumMarquee.setPointerCapture(event.pointerId); } catch (_) {}
     });
     albumMarquee.addEventListener("pointermove", (event) => {
-      if (!marqueePointerDown) return;
-      const distance = event.clientX - marqueeDragStartX;
-      if (Math.abs(distance) > 5) marqueeDragged = true;
-      if (marqueeDragged) albumMarquee.scrollLeft = marqueeDragStartScroll - distance;
+      if (!carouselPointerDown) return;
+      const distance = event.clientX - carouselStartX;
+      if (Math.abs(distance) > 5) carouselDragged = true;
+      if (carouselDragged) {
+        const previousRotation = carouselRotation;
+        carouselRotation = carouselStartRotation + distance * 0.42;
+        carouselVelocity = (carouselRotation - previousRotation) * 0.22;
+      }
     });
-    function terminerGlissementMenu() {
-      marqueePointerDown = false;
+    function terminerGlissementCarousel() {
+      carouselPointerDown = false;
       albumMarquee.classList.remove("dragging");
-      if (marqueeDragged) setTimeout(() => { marqueeDragged = false; }, 80);
+      carouselPauseUntil = performance.now() + 700;
+      if (carouselDragged) setTimeout(() => { carouselDragged = false; }, 100);
     }
-    albumMarquee.addEventListener("pointerup", terminerGlissementMenu);
-    albumMarquee.addEventListener("pointercancel", terminerGlissementMenu);
-    albumMarquee.addEventListener("lostpointercapture", terminerGlissementMenu);
-    albumMarquee.addEventListener("mouseenter", () => { marqueePaused = true; });
-    albumMarquee.addEventListener("mouseleave", () => { marqueePaused = false; });
-    albumMarquee.addEventListener("focusin", () => { marqueePaused = true; });
-    albumMarquee.addEventListener("focusout", () => { marqueePaused = false; });
+    albumMarquee.addEventListener("pointerup", terminerGlissementCarousel);
+    albumMarquee.addEventListener("pointercancel", terminerGlissementCarousel);
+    albumMarquee.addEventListener("lostpointercapture", terminerGlissementCarousel);
+    albumMarquee.addEventListener("mouseenter", () => { carouselPauseUntil = Infinity; });
+    albumMarquee.addEventListener("mouseleave", () => { carouselPauseUntil = performance.now() + 500; });
+    albumMarquee.addEventListener("focusin", () => { carouselPauseUntil = Infinity; });
+    albumMarquee.addEventListener("focusout", () => { carouselPauseUntil = performance.now() + 500; });
+    window.addEventListener("resize", () => requestAnimationFrame(positionnerCarousel), { passive: true });
 
     function afficherAlbums() {
       albumsView.innerHTML = "";
