@@ -100,8 +100,8 @@
     else last = 0;
   }
   function markTargets(scope = document) {
-    if (scope.matches?.('.album-card,.photo-item,.featured-photo,.text-link,.topnav a,.theme-toggle,.lb-nav,.lb-close,.lb-fullscreen')) addTarget(scope);
-    scope.querySelectorAll?.('.album-card,.photo-item,.featured-photo,.text-link,.topnav a,.theme-toggle,.lb-nav,.lb-close,.lb-fullscreen').forEach(addTarget);
+    if (scope.matches?.('.album-card,.photo-item,.featured-photo,.text-link,.topnav a,.theme-toggle,.lb-nav,.lb-close,.lb-fullscreen,.wordmark,.btn-back')) addTarget(scope);
+    scope.querySelectorAll?.('.album-card,.photo-item,.featured-photo,.text-link,.topnav a,.theme-toggle,.lb-nav,.lb-close,.lb-fullscreen,.wordmark,.btn-back').forEach(addTarget);
   }
   function addTarget(el) {
     el.classList.add('cursor-target');
