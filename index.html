@@ -731,7 +731,11 @@
           title.textContent = album.titre;
           button.append(img, title);
           button.addEventListener("click", () => {
-            if (marqueeDragged) return;
+            // Un clic déclenché après un glissement ne doit pas ouvrir l'album.
+            // Réinitialiser immédiatement évite de bloquer aussi le clic suivant.
+            const wasDragged = marqueeDragged;
+            marqueeDragged = false;
+            if (wasDragged) return;
             if (parents.length === 0) {
               const index = portfolioData.indexOf(album);
               if (index >= 0) ouvrirAlbum(index);
