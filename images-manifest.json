@@ -283,6 +283,20 @@
         }
       ],
       "description": "Des villes aux ambiances singulières, des détails inattendus et des rencontres : explorer le monde à travers l’objectif."
+    },
+    {
+      "titre": "Divers",
+      "sujet": "Photographie · Autres séries",
+      "description": "Une sélection d’images variées, de moments spontanés et de sujets qui ne rentrent dans aucune catégorie précise.",
+      "cover": "",
+      "photos": []
+    },
+    {
+      "titre": "Portraits",
+      "sujet": "Portrait · Photographie",
+      "description": "Des portraits qui cherchent à saisir une expression, une personnalité ou un instant naturel.",
+      "cover": "",
+      "photos": []
     }
   ]
 }
