@@ -7,8 +7,18 @@
     {
       "titre": "Divers",
       "sujet": "Photographie",
-      "cover": "",
-      "photos": []
+      "cover": "images/Divers/2023_0304_18561300.webp",
+      "photos": [
+        "images/Divers/2023_0304_18561300.webp",
+        "images/Divers/2023_0419_12104100%20%281%29.webp",
+        "images/Divers/Capture%20d%27%C3%A9cran%202024-02-28%20155431.webp",
+        "images/Divers/DSCF0178.webp",
+        "images/Divers/DSCF0180.webp",
+        "images/Divers/DSCF0244.webp",
+        "images/Divers/DSCF0286.webp",
+        "images/Divers/gar%C3%A7on%20au%20port%20copie.webp",
+        "images/Divers/Wallpaper-Porsche.webp"
+      ]
     },
     {
       "titre": "France",
