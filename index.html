@@ -266,6 +266,15 @@
     }
     .album-title { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 500; }
     .album-count { font-size: 0.82rem; color: var(--ink-soft); white-space: nowrap; }
+    .album-description {
+      max-width: 72ch;
+      margin-top: 18px;
+      color: var(--ink-soft);
+      font-size: 1rem;
+      line-height: 1.75;
+      white-space: pre-line;
+    }
+    .album-description[hidden] { display: none; }
 
     /* --- Photo view --- */
     .album-marquee {
@@ -552,6 +561,7 @@
       <div class="album-header">
         <h2 id="current-album-title">Titre</h2>
         <p id="current-album-sub"></p>
+        <p id="current-album-description" class="album-description" hidden></p>
       </div>
       <div id="photos-container" class="photos-grid"></div>
     </section>
@@ -621,6 +631,7 @@
     const photosContainer = document.getElementById("photos-container");
     const currentAlbumTitle = document.getElementById("current-album-title");
     const currentAlbumSub = document.getElementById("current-album-sub");
+    const currentAlbumDescription = document.getElementById("current-album-description");
     const seriesCount = document.getElementById("series-count");
     const seriesSearch = document.getElementById("series-search");
     const searchStatus = document.getElementById("search-status");
@@ -838,6 +849,8 @@
       const album = portfolioData[index];
       currentAlbumTitle.textContent = album.titre;
       currentAlbumSub.textContent = album.sujet + (album.children ? " · " + album.children.length + " sous-séries" : album.photos.length ? " · " + album.photos.length + " clichés" : " · Série à compléter");
+      currentAlbumDescription.textContent = album.description || "";
+      currentAlbumDescription.hidden = !album.description;
       photosContainer.innerHTML = "";
       photosContainer.classList.toggle("subseries-grid", Boolean(album.children));
       afficherPhotoPrincipale(album);
@@ -889,6 +902,8 @@
     function ouvrirSousAlbum(child) {
       currentAlbumTitle.textContent = child.titre;
       currentAlbumSub.textContent = child.sujet + (child.children ? " · " + child.children.length + " sous-séries" : child.photos.length ? " · " + child.photos.length + " clichés" : " · Série à compléter");
+      currentAlbumDescription.textContent = child.description || "";
+      currentAlbumDescription.hidden = !child.description;
       photosContainer.innerHTML = "";
       photosContainer.classList.toggle("subseries-grid", Boolean(child.children));
       afficherPhotoPrincipale(child);
