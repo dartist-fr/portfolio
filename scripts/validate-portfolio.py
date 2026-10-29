@@ -14,7 +14,7 @@ HTML = ROOT / "index.html"
 class MarkupChecks(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.ids, self.duplicates, self.resources = set(), [], []
+        self.ids, self.duplicates, self.resources, self.fragments = set(), [], [], []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -24,6 +24,8 @@ class MarkupChecks(HTMLParser):
             self.ids.add(attrs["id"])
         for key in ("src", "href"):
             value = attrs.get(key, "")
+            if key == "href" and value.startswith("#") and len(value) > 1:
+                self.fragments.append((tag, value[1:]))
             if value and "${" not in value and not value.startswith(("http://", "https://", "mailto:", "#", "?", "data:", "javascript:")):
                 self.resources.append((tag, key, value))
 
@@ -47,6 +49,9 @@ def main():
     parser.feed(HTML.read_text(encoding="utf-8"))
     if parser.duplicates:
         errors.append("IDs HTML dupliqués: " + ", ".join(sorted(set(parser.duplicates))))
+    for tag, fragment in parser.fragments:
+        if unquote(fragment) not in parser.ids:
+            errors.append(f"Lien interne sans cible ({tag} href): #{fragment}")
     for tag, attr, value in parser.resources:
         if not local_file(value):
             errors.append(f"Ressource locale absente ({tag} {attr}): {value}")
@@ -96,7 +101,7 @@ def main():
         errors.append(f"Image hero absente: {hero['image']}")
     if errors:
         fail(errors)
-    print(f"OK: HTML analysé, {len(albums)} albums principaux et chemins d'images valides.")
+    print(f"OK: HTML analysé, liens internes valides, {len(albums)} albums principaux et chemins d'images valides.")
 
 
 if __name__ == "__main__":
