@@ -36,7 +36,7 @@ def fail(errors):
 
 def local_file(value):
     path = unquote(value).split("?", 1)[0].split("#", 1)[0]
-    return not path or path == "." or (ROOT / path).is_file()
+    return not path or Path(path).as_posix() in ("", ".") or (ROOT / path).is_file()
 
 
 def main():
