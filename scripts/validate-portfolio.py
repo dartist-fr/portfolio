@@ -24,7 +24,7 @@ class MarkupChecks(HTMLParser):
             self.ids.add(attrs["id"])
         for key in ("src", "href"):
             value = attrs.get(key, "")
-            if value and not value.startswith(("http://", "https://", "mailto:", "#", "data:", "javascript:")):
+            if value and not value.startswith(("http://", "https://", "mailto:", "#", "?", "data:", "javascript:")):
                 self.resources.append((tag, key, value))
 
 
