@@ -24,7 +24,7 @@ class MarkupChecks(HTMLParser):
             self.ids.add(attrs["id"])
         for key in ("src", "href"):
             value = attrs.get(key, "")
-            if value and not value.startswith(("http://", "https://", "mailto:", "#", "?", "data:", "javascript:")):
+            if value and "${" not in value and not value.startswith(("http://", "https://", "mailto:", "#", "?", "data:", "javascript:")):
                 self.resources.append((tag, key, value))
 
 
@@ -36,7 +36,7 @@ def fail(errors):
 
 def local_file(value):
     path = unquote(value).split("?", 1)[0].split("#", 1)[0]
-    return (ROOT / path).is_file()
+    return not path or path == "." or (ROOT / path).is_file()
 
 
 def main():
