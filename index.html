@@ -1,1114 +1,421 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dartist • Photographe</title>
-  <meta name="description" content="Portfolio photographique de dartist : séries photo de Londres, Marrakech et Rome." />
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=20261027-1" />
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png?v=20261027-2" />
-  <link rel="apple-touch-icon" href="./favicon.png?v=20261027-2" />
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500&display=swap');
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>dartist. — Photographe</title>
+<meta name="description" content="Portfolio de dartist., photographe : sport, événementiel, voyages et instants du quotidien.">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.png" type="image/png">
+<style>
+:root{
+  --bg:#0b0b0b; --bg2:#151515; --fg:#ecebe7; --mute:#8d8b86; --line:#262626;
+  --pad:clamp(20px,4vw,56px);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
 
-    :root {
-      color-scheme: light;
-      --paper: #f4f2ec;
-      --paper-2: #eae7df;
-      --ink: #1a1815;
-      --ink-soft: #6b665c;
-      --line: #d6d2c8;
-      --accent: #b3542f;
-    }
-    :root[data-theme="dark"] {
-      color-scheme: dark;
-      --paper: #171715;
-      --paper-2: #242320;
-      --ink: #f1eee7;
-      --ink-soft: #aaa49a;
-      --line: #3a3731;
-      --accent: #d27b55;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        color-scheme: dark;
-        --paper: #171715;
-        --paper-2: #242320;
-        --ink: #f1eee7;
-        --ink-soft: #aaa49a;
-        --line: #3a3731;
-        --accent: #d27b55;
-      }
-    }
+/* ——— Barre de navigation ——— */
+.bar{position:fixed;inset:0 0 auto;z-index:50;display:flex;justify-content:space-between;align-items:center;
+  padding:18px var(--pad);transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.bar.solid{background:rgba(11,11,11,.94);border-color:var(--line)}
+.brand{font-family:var(--serif);font-size:1.35rem;letter-spacing:-.01em}
+.bar nav{display:flex;gap:clamp(16px,3vw,36px);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase}
+.bar nav a{opacity:.8;transition:opacity .2s}
+.bar nav a:hover{opacity:1}
+#top-sentinel{position:absolute;top:0;left:0;width:1px;height:60px;pointer-events:none}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ——— Image qui se fond à l'arrivée ——— */
+.ph{position:relative;overflow:hidden;background:var(--bg2)}
+.ph img,.it img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+img.on{opacity:1!important}
 
-    html { scroll-behavior: smooth; }
+/* ——— Hero ——— */
+.hero{position:relative;height:100vh;height:100svh;min-height:520px;display:flex;align-items:flex-end;overflow:hidden;background:var(--bg2)}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.4),rgba(0,0,0,0) 30%,rgba(0,0,0,.7))}
+.hero-in{position:relative;z-index:2;padding:0 var(--pad) clamp(36px,9vh,96px);max-width:960px}
+.hero h1{font:400 clamp(3.4rem,11vw,8.5rem)/.92 var(--serif);letter-spacing:-.03em}
+.hero p{margin-top:20px;max-width:42ch;color:rgba(236,235,231,.88);font-size:clamp(.95rem,1.4vw,1.1rem)}
+.cta{display:inline-block;margin-top:28px;padding:13px 26px;border:1px solid rgba(236,235,231,.7);
+  font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;transition:background .25s,color .25s}
+.cta:hover{background:var(--fg);color:var(--bg)}
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--paper);
-      color: var(--ink);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-      line-height: 1.6;
-    }
+/* ——— Sections ——— */
+section{padding-top:clamp(64px,10vw,128px)}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding:0 var(--pad);margin-bottom:28px}
+.head h2{font:400 clamp(1.8rem,3.6vw,2.8rem)/1.1 var(--serif);letter-spacing:-.01em}
+.eyebrow{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
+.arrows{display:flex;gap:8px}
+.arrows button{width:44px;height:44px;border:1px solid var(--line);font-size:1.3rem;line-height:1;transition:border-color .2s,background .2s}
+.arrows button:hover{border-color:var(--fg)}
+@media (hover:none){.arrows{display:none}}
 
-    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+/* ——— Carrousel (défilement natif, sans JS d'animation) ——— */
+.car{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 var(--pad) 12px;
+  scroll-padding:0 var(--pad);scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.car::-webkit-scrollbar{display:none}
+.slide{flex:0 0 min(80vw,640px);scroll-snap-align:start}
+.slide .ph{aspect-ratio:3/2}
 
-    /* --- Finitions éditoriales : une interface discrète au service des images --- */
-    .scroll-progress { position: fixed; inset: 0 auto auto 0; width: 100%; height: 2px; z-index: 100; transform: scaleX(0); transform-origin: left center; background: var(--accent); pointer-events: none; }
-    .hero .eyebrow { animation: heroTextIn .7s .05s both; }
-    .hero h1 { animation: heroTextIn .8s .14s both; }
-    .hero p { animation: heroTextIn .8s .24s both; }
-    @keyframes heroTextIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    .hero h1 em { color: #f0b18f; }
-    .album-frame { isolation: isolate; }
-    .album-frame::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .3s ease; background: linear-gradient(145deg, rgba(255,255,255,.12), transparent 42%); }
-    .album-card:hover .album-frame::after, .album-card:focus-visible .album-frame::after { opacity: 1; }
-    .album-index, .album-view { z-index: 3; }
-    .album-card:focus-visible .album-frame { outline: 2px solid var(--accent); outline-offset: 4px; }
-    @media (prefers-reduced-motion: reduce) {
-      .hero .eyebrow, .hero h1, .hero p { animation: none !important; }
-    }
+/* ——— Cartes d'albums ——— */
+.card{display:block}
+.card .ph{aspect-ratio:4/3}
+.cap{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-top:12px}
+.cap h3{font:400 1.25rem/1.2 var(--serif)}
+.cap span{font-size:.78rem;color:var(--mute);white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:36px 16px;padding:0 var(--pad)}
+@media (hover:hover){
+  .card .ph img,.slide .ph img{transition:opacity .5s,transform .8s cubic-bezier(.2,.7,.2,1)}
+  .card:hover .ph img,.slide:hover .ph img{transform:scale(1.035)}
+}
 
-    /* --- Top bar --- */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 26px 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .wordmark {
-      color: var(--ink);
-      text-decoration: none;
-      font-family: 'Fraunces', serif;
-      font-weight: 600;
-      font-size: 1.4rem;
-      letter-spacing: -0.01em;
-    }
-    .wordmark:hover { color: var(--ink); }
-    .wordmark span { color: var(--accent); }
-    .topnav {
-      display: flex;
-      gap: 26px;
-      font-size: 0.8rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .topnav a { color: var(--ink-soft); text-decoration: none; transition: color 0.2s; }
-    .topnav a:hover { color: var(--ink); }
-    .topbar-actions { display: flex; align-items: center; gap: 22px; }
-    .theme-toggle {
-      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-      padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px;
-      background: transparent; color: var(--ink); font: inherit; font-size: .72rem;
-      cursor: pointer; transition: background .2s, border-color .2s;
-    }
-    .theme-toggle:hover { background: var(--paper-2); }
-    .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* ——— Vue album ——— */
+#album{padding-top:clamp(96px,14vw,150px)}
+.crumb{padding:0 var(--pad);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);display:flex;gap:10px;flex-wrap:wrap}
+.crumb a:hover{color:var(--fg)}
+.a-head{padding:14px var(--pad) 40px;max-width:980px}
+.a-head h1{font:400 clamp(2.6rem,7vw,5.5rem)/1 var(--serif);letter-spacing:-.02em}
+.a-head .sub{margin-top:14px;color:var(--mute);font-size:.82rem;letter-spacing:.14em;text-transform:uppercase}
+.a-head .desc{margin-top:22px;max-width:60ch;color:rgba(236,235,231,.85)}
+#kids{margin-bottom:56px}
+#rows{padding:0 var(--pad)}
+.row{display:flex;gap:6px;margin-bottom:6px}
+.it{display:block;position:relative;min-width:0;overflow:hidden;background:var(--bg2);cursor:zoom-in}
+.it img{position:absolute;inset:0}
 
-    /* --- Accueil : une grande photo en arrière-plan, uniquement sur la page d'accueil --- */
-    header.hero {
-      position: relative;
-      isolation: isolate;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-height: min(72vh, 760px);
-      margin-left: calc(50% - 50vw);
-      margin-right: calc(50% - 50vw);
-      padding: 100px max(28px, calc((100vw - 1124px) / 2)) 96px;
-      overflow: hidden;
-      border-bottom: 0;
-      color: #fff;
-    }
-    header.hero::before {
-      content: "";
-      position: absolute;
-      z-index: -2;
-      inset: 0;
-      background-image: var(--hero-image, none);
-      background-size: cover;
-      background-position: var(--hero-position, center 45%);
-      transform: scale(1.01);
-    }
-    header.hero::after {
-      content: "";
-      position: absolute;
-      z-index: -1;
-      inset: 0;
-      background: linear-gradient(90deg, rgba(12, 12, 11, .78) 0%, rgba(12, 12, 11, .48) 52%, rgba(12, 12, 11, .16) 100%),
-                  linear-gradient(0deg, rgba(12, 12, 11, .28), transparent 55%);
-    }
-    .hero .eyebrow {
-      font-size: 0.78rem;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: #f0b18f;
-      margin-bottom: 22px;
-    }
-    .hero h1 {
-      font-family: 'Fraunces', serif;
-      font-weight: 400;
-      font-size: clamp(2.6rem, 8vw, 5.4rem);
-      line-height: 0.98;
-      letter-spacing: -0.02em;
-      max-width: 14ch;
-    }
-    .hero h1 em { font-style: italic; color: #f0b18f; }
-    .hero p {
-      margin-top: 26px;
-      max-width: 46ch;
-      color: rgba(255, 255, 255, .88);
-      font-size: 1.05rem;
-    }
-    .featured-copy .eyebrow, .about-copy .eyebrow { color:var(--accent); font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; margin-bottom:12px; }
-    .featured-copy h2, .about-copy h2 { font-family:'Fraunces',serif; font-size:clamp(2rem,4vw,3.3rem); font-weight:400; line-height:1.05; }
-    .featured-copy p, .about-copy p { color:var(--ink-soft); margin-top:16px; max-width:48ch; }
-    .text-link { display:inline-block; margin-top:22px; color:var(--ink); text-decoration:none; border-bottom:1px solid var(--accent); padding-bottom:4px; font-size:.82rem; }
-    .text-link:hover { color:var(--accent); }
-    body.album-standalone .hero, body.album-standalone #travaux { display:none !important; }
-    body.album-standalone .topbar { padding-top:18px; padding-bottom:18px; }
-    body.album-standalone #photo-view { display:block !important; padding-bottom:48px; }
-    body.album-standalone .btn-back { display:inline-flex; padding:12px 0 0; font-size:1rem; letter-spacing:0; text-transform:none; }
-    body.album-standalone .wrap { max-width:1180px; }
-    body.album-standalone #album-marquee { display:block; }
-    body.album-standalone #apropos { display:none !important; }
-    body.album-standalone footer { display:flex; }
-    .about-section { display:grid; grid-template-columns:.7fr 1.3fr; gap:48px; padding:70px 0 84px; border-top:1px solid var(--line); align-items:start; }
-    .about-mark { font-family:'Fraunces',serif; font-size:clamp(3rem,7vw,5.5rem); line-height:1; color:var(--accent); }
-    .photo-meta { display:flex; flex-wrap:wrap; gap:7px 14px; margin-top:10px; color:var(--ink-soft); font-size:.76rem; letter-spacing:.02em; }
-    .photo-meta:empty { display:none; }
-    .lb-fullscreen { position:absolute; top:22px; right:72px; z-index:2; color:#f4f2ec; background:rgba(20,18,15,.35); border:1px solid rgba(255,255,255,.24); padding:8px 11px; cursor:pointer; font:inherit; font-size:.75rem; }
-    .lb-fullscreen:hover { background:rgba(255,255,255,.14); }
-    @media (max-width:700px) {
-      .about-section { padding-bottom:54px; }
-      .lb-fullscreen { top:auto; bottom:54px; right:12px; }
-    }
+/* ——— À propos / contact ——— */
+.about{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(24px,6vw,96px);padding:0 var(--pad);align-items:start}
+.about .mark{font:400 clamp(3rem,8vw,6.5rem)/1 var(--serif);letter-spacing:-.03em}
+.about h2{font:400 clamp(1.6rem,3vw,2.3rem)/1.2 var(--serif);max-width:20ch}
+.about p{margin-top:18px;color:rgba(236,235,231,.8);max-width:56ch}
+.link{display:inline-block;margin-top:24px;padding-bottom:3px;border-bottom:1px solid var(--fg);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase}
+@media (max-width:720px){.about{grid-template-columns:1fr}}
+footer{margin-top:clamp(64px,10vw,128px);padding:28px var(--pad) calc(28px + env(safe-area-inset-bottom));border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--mute)}
+footer a:hover{color:var(--fg)}
+.err{padding:160px var(--pad);color:var(--mute)}
 
-    /* --- Section label --- */
-    .section-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin: 56px 0 28px;
-    }
-    .section-head h2 {
-      font-family: 'Fraunces', serif;
-      font-weight: 500;
-      font-size: 1.6rem;
-      letter-spacing: -0.01em;
-    }
-    .section-head .meta { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+/* ——— Visionneuse ——— */
+#lb{position:fixed;inset:0;z-index:100;background:rgba(5,5,5,.98);display:none;align-items:center;justify-content:center;touch-action:pan-y}
+#lb.open{display:flex}
+#lb img{max-width:100vw;max-height:calc(100vh - 110px);max-height:calc(100dvh - 110px);object-fit:contain;transition:opacity .2s;user-select:none;-webkit-user-drag:none}
+#lb .count{position:absolute;top:20px;left:var(--pad);font-size:.78rem;letter-spacing:.14em;color:var(--mute)}
+#lb .x{position:absolute;top:10px;right:calc(var(--pad) - 10px);width:48px;height:48px;font-size:1.5rem}
+#lb .nav{position:absolute;top:50%;transform:translateY(-50%);width:56px;height:80px;font-size:2.2rem;opacity:.7;transition:opacity .2s}
+#lb .nav:hover{opacity:1}
+#lb .prev{left:6px}#lb .next{right:6px}
+#lb .legend{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:.82rem;color:var(--mute);padding:0 70px}
+@media (max-width:600px){#lb .nav{width:44px}#lb .legend{padding:0 50px}}
 
-    /* --- Albums grid --- */
-    .albums-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 30px 26px;
-      padding-bottom: 80px;
-    }
-    .series-tools { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: -8px 0 28px; }
-    .series-search-wrap { position: relative; width: min(100%, 360px); }
-    .series-search-wrap::before { content: "⌕"; position: absolute; left: 14px; top: 50%; transform: translateY(-52%); font-size: 1.35rem; color: var(--ink-soft); pointer-events: none; }
-    .series-search { width: 100%; border: 1px solid var(--line); background: var(--paper-2); color: var(--ink); border-radius: 2px; padding: 12px 14px 12px 42px; font: inherit; font-size: .9rem; outline-offset: 4px; transition: border-color .2s, box-shadow .2s; }
-    .series-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent); }
-    .series-search::placeholder { color: var(--ink-soft); }
-    .search-status { color: var(--ink-soft); font-size: .78rem; white-space: nowrap; }
-    .no-search-results { grid-column: 1 / -1; padding: 34px 0; color: var(--ink-soft); border-top: 1px solid var(--line); }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
-    }
-    .album-card { cursor: pointer; background: none; border: none; text-align: left; font: inherit; color: inherit; padding: 0; }
-    .album-frame {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 4 / 5;
-      overflow: hidden;
-      background: var(--paper-2);
-    }
-    .album-placeholder { width: 100%; height: 100%; background: var(--paper-2); }
-    .empty-series { color: var(--ink-soft); padding: 28px 0; font-size: .95rem; }
-    .album-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.5s;
-      filter: grayscale(18%);
-    }
-    .album-card:hover .album-frame img { transform: scale(1.05); filter: grayscale(0%); }
-    .album-index {
-      position: absolute;
-      top: 14px; left: 14px;
-      font-family: 'Fraunces', serif;
-      font-size: 0.85rem;
-      color: #fff;
-      mix-blend-mode: difference;
-      letter-spacing: 0.05em;
-    }
-    .album-view {
-      position: absolute;
-      bottom: 14px; right: 14px;
-      background: var(--paper);
-      color: var(--ink);
-      font-size: 0.7rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      padding: 7px 12px;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 0.3s, transform 0.3s;
-    }
-    .album-card:hover .album-view { opacity: 1; transform: translateY(0); }
-    .album-info {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      padding-top: 16px;
-      border-top: 1px solid var(--line);
-      margin-top: 14px;
-    }
-    .album-title { font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 500; }
-    .album-count { font-size: 0.82rem; color: var(--ink-soft); white-space: nowrap; }
-    .album-description {
-      max-width: 72ch;
-      margin-top: 18px;
-      color: var(--ink-soft);
-      font-size: 1rem;
-      line-height: 1.75;
-      white-space: pre-line;
-    }
-    .album-description[hidden] { display: none; }
-
-    /* --- Photo view --- */
-    .album-marquee {
-      display: none;
-      position: relative;
-      overflow-x: auto;
-      overflow-y: hidden;
-      width: 100%;
-      margin: 48px 0 72px;
-      padding: 18px 0 22px;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      cursor: grab;
-      touch-action: pan-x pan-y;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
-      mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
-    }
-    .album-marquee::-webkit-scrollbar { display: none; }
-    .album-marquee.visible { display: block; }
-    .album-marquee.dragging { cursor: grabbing; user-select: none; }
-    .marquee-track {
-      display: flex;
-      align-items: stretch;
-      gap: 14px;
-      width: max-content;
-      padding: 0 22px;
-    }
-    .marquee-album {
-      display: flex;
-      flex: 0 0 clamp(150px, 18vw, 220px);
-      flex-direction: column;
-      gap: 10px;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      color: var(--ink);
-      text-align: left;
-      cursor: pointer;
-      user-select: none;
-    }
-    .marquee-album img {
-      display: block;
-      width: 100%;
-      height: clamp(100px, 11vw, 140px);
-      object-fit: cover;
-      background: var(--paper-2);
-      transition: transform .25s, opacity .25s;
-      pointer-events: none;
-    }
-    .marquee-album:hover img { transform: scale(.97); opacity: .85; }
-    .marquee-album span {
-      max-width: 100%;
-      overflow: hidden;
-      color: var(--ink);
-      font: 500 .9rem/1.3 'Fraunces', serif;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .marquee-album:hover span, .marquee-album:focus-visible span { color: var(--accent); }
-    .marquee-album:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-    @media (max-width: 640px) {
-      .album-marquee { margin: 32px 0 48px; padding: 14px 0 18px; }
-      .marquee-track { gap: 12px; padding: 0 18px; }
-      .marquee-album { flex-basis: 145px; }
-      .marquee-album img { height: 100px; }
-      .marquee-album span { font-size: .82rem; }
-    }
-
-    #photo-view { display: none; padding-bottom: 90px; }
-    .btn-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      background: none;
-      border: none;
-      color: var(--ink);
-      font: inherit;
-      font-size: 0.82rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      padding: 40px 0 0;
-    }
-    .btn-back:hover { color: var(--accent); }
-    .btn-back .arrow { transition: transform 0.2s; }
-    .btn-back:hover .arrow { transform: translateX(-4px); }
-
-    .album-header { margin: 30px 0 34px; border-bottom: 1px solid var(--line); padding-bottom: 24px; }
-    .album-header h2 {
-      font-family: 'Fraunces', serif;
-      font-weight: 400;
-      font-size: clamp(2rem, 6vw, 3.4rem);
-      letter-spacing: -0.02em;
-    }
-    .album-header p { color: var(--ink-soft); margin-top: 8px; font-size: 0.9rem; letter-spacing: 0.04em; }
-
-    .featured-photo {
-      display: block;
-      width: 100%;
-      margin: 0 0 24px;
-      padding: 0;
-      border: 0;
-      background: var(--paper-2);
-      cursor: zoom-in;
-      overflow: hidden;
-    }
-    .featured-photo img {
-      display: block;
-      width: 100%;
-      height: auto;
-      max-height: 78vh;
-      object-fit: contain;
-      margin: 0 auto;
-      transition: transform 0.5s ease;
-    }
-    .featured-photo:hover img { transform: scale(1.01); }
-    .featured-photo:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-
-    .photos-grid {
-      columns: 4 220px;
-      column-gap: 14px;
-    }
-    /* Sous-séries : une vraie grille pour aligner les cartes sur des rangées. */
-    .photos-grid.subseries-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      column-count: initial;
-      column-gap: 26px;
-      row-gap: 30px;
-    }
-    .photos-grid.subseries-grid > .album-card {
-      width: 100%;
-      margin: 0;
-      break-inside: auto;
-    }
-    .photo-item {
-      position: relative;
-      width: 100%;
-      height: fit-content;
-      overflow: hidden;
-      background: var(--paper-2);
-      cursor: zoom-in;
-      border: none;
-      padding: 0;
-      display: block;
-      break-inside: avoid;
-      margin: 0 0 14px;
-      -webkit-column-break-inside: avoid;
-    }
-    .photo-item img {
-      display: block;
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-      filter: grayscale(12%);
-      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.45s ease;
-    }
-    .photo-item:hover img, .photo-item:focus-visible img { transform: scale(1.025); filter: grayscale(0%); }
-
-    /* --- Lightbox --- */
-    #lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(20, 18, 15, 0.94);
-      z-index: 50;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      cursor: zoom-out;
-    }
-    #lightbox.open { display: flex; }
-    #lightbox img { max-width: 92vw; max-height: 88vh; object-fit: contain; box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
-    .lb-close {
-      position: absolute; top: 22px; right: 26px; z-index: 2;
-      color: #f4f2ec; font-size: 1.6rem; background: none; border: none; cursor: pointer; line-height: 1; padding: 8px;
-    }
-    .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 46px; height: 54px; border: 1px solid rgba(255,255,255,.24); color: #f4f2ec; background: rgba(20,18,15,.35); font: inherit; font-size: 2rem; cursor: pointer; transition: background .2s, border-color .2s; }
-    .lb-nav:hover, .lb-nav:focus-visible { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.65); }
-    .lb-prev { left: 22px; } .lb-next { right: 22px; }
-    .lb-caption { position: absolute; bottom: 18px; left: 72px; right: 72px; color: rgba(255,255,255,.8); text-align: center; font-size: .82rem; }
-    .lb-counter { position: absolute; top: 27px; left: 26px; color: rgba(255,255,255,.72); font-size: .78rem; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
-    .lb-nav[hidden] { display: none; }
-    @media (max-width: 600px) {
-      .series-tools { align-items: flex-start; flex-direction: column; gap: 10px; }
-      .series-search-wrap { width: 100%; }
-      .lb-prev { left: 8px; } .lb-next { right: 8px; }
-      .lb-nav { width: 36px; height: 46px; }
-      .lb-counter { top: 18px; left: 16px; }
-      .lb-close { top: 10px; right: 10px; }
-      .lb-caption { left: 48px; right: 48px; bottom: 10px; }
-    }
-
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 36px 0 60px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: space-between;
-      align-items: center;
-      color: var(--ink-soft);
-      font-size: 0.82rem;
-    }
-    footer .fw { font-family: 'Fraunces', serif; color: var(--ink); font-size: 1rem; }
-    footer a { color: var(--ink-soft); text-decoration: none; }
-    footer a:hover { color: var(--accent); }
-    .footer-social { display: inline-flex; align-items: center; gap: 14px; }
-    .instagram-link { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; }
-    .instagram-link svg { display: block; width: 22px; height: 22px; }
-    .instagram-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
-
-    .album-card:focus-visible, .photo-item:focus-visible, .btn-back:focus-visible, .lb-close:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 4px;
-    }
-    .album-frame img, .photo-item img { display: block; }
-    @media (max-width: 640px) {
-      .wrap { padding: 0 18px; }
-      .topbar { align-items: flex-start; gap: 12px; }
-      .topbar-actions { align-items: flex-end; flex-direction: column; gap: 10px; }
-      .topnav { gap: 12px; flex-wrap: wrap; justify-content: flex-end; font-size: 0.68rem; }
-      header.hero { min-height: 62vh; padding: 76px 22px 68px; }
-      .hero p { font-size: 0.96rem; }
-      .section-head { margin-top: 40px; }
-      .albums-grid { grid-template-columns: 1fr; gap: 28px; }
-      .about-section { grid-template-columns: 1fr; gap: 28px; padding: 48px 0 54px; }
-      .about-mark { font-size: clamp(3.2rem, 15vw, 5rem); }
-      .about-copy h2 { font-size: clamp(2rem, 8vw, 3rem); max-width: 18ch; }
-      .about-copy p { max-width: 52ch; }
-      .photos-grid { columns: 2; column-gap: 10px; }
-      .photos-grid.subseries-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 12px; }
-      .photo-item { margin-bottom: 10px; }
-      #lightbox { padding: 16px; }
-      #lightbox img { max-width: 96vw; max-height: 82vh; }
-      .lb-close { top: 14px; right: 16px; }
-      footer { align-items: flex-start; flex-direction: column; }
-    }
-
-  </style>
-  <link rel="stylesheet" href="./scripts/cursor/target-cursor.css?v=20261027-3" />
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition-duration:.01ms!important}
+}
+</style>
 </head>
 <body>
-  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
-  <div class="wrap">
-    <div class="topbar">
-      <a class="wordmark" href="./" aria-label="Retour à l’accueil">dartist<span>.</span></a>
-      <div class="topbar-actions">
-        <nav class="topnav">
-          <a href="#travaux">Travaux</a>
-          <a href="#apropos">À propos</a>
-          <a href="#contact">Contact</a>
-        </nav>
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Activer le thème sombre" title="Changer le thème">
-          <span id="theme-icon" aria-hidden="true">☾</span><span id="theme-label">Sombre</span>
-        </button>
+<div id="top-sentinel"></div>
+<header class="bar" id="bar">
+  <a class="brand" href="#" aria-label="Accueil">dartist.</a>
+  <nav aria-label="Navigation principale">
+    <a href="#albums">Albums</a>
+    <a href="#apropos">À propos</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <!-- ACCUEIL -->
+  <div id="home">
+    <div class="hero">
+      <img id="hero-img" alt="" fetchpriority="high" decoding="async">
+      <div class="hero-in">
+        <h1>dartist.</h1>
+        <p>Photographe depuis 2022. Sport, événementiel, voyages&nbsp;: des instants qui méritent d’être vécus deux fois.</p>
+        <a class="cta" href="#albums">Voir les albums</a>
       </div>
     </div>
 
-    <header class="hero">
-      <div class="eyebrow">Photographe · Depuis 2022</div>
-      <h1>Capturer la <em>lumière</em>, figer l'instant.</h1>
-      <p>Du bord des terrains aux rues du monde, je photographie les instants qui méritent d'être vécus deux fois.</p>
-    </header>
-
-    <section id="travaux">
-      <div class="section-head">
-        <h2>Séries</h2>
-        <span class="meta" id="series-count"></span>
+    <section id="selection">
+      <div class="head">
+        <div><div class="eyebrow">À la une</div><h2>Sélection</h2></div>
+        <div class="arrows">
+          <button type="button" id="car-prev" aria-label="Précédent">‹</button>
+          <button type="button" id="car-next" aria-label="Suivant">›</button>
+        </div>
       </div>
-      <div class="series-tools">
-        <label class="series-search-wrap">
-          <span style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Rechercher une série</span>
-          <input id="series-search" class="series-search" type="search" placeholder="Rechercher une série…" autocomplete="off" aria-label="Rechercher une série" />
-        </label>
-        <span id="search-status" class="search-status" aria-live="polite"></span>
-      </div>
-      <main id="albums-view" class="albums-grid"></main>
+      <div class="car" id="car" tabindex="0" aria-label="Sélection d’albums"></div>
     </section>
 
-    <section id="photo-view">
-      <button class="btn-back" onclick="revenirEnArriereAlbum()" aria-label="Revenir en arrière"><span class="arrow">←</span> Retour</button>
-      <div class="album-header">
-        <h2 id="current-album-title">Titre</h2>
-        <p id="current-album-sub"></p>
-        <p id="current-album-description" class="album-description" hidden></p>
-      </div>
-      <div id="photos-container" class="photos-grid"></div>
+    <section id="albums">
+      <div class="head"><div><div class="eyebrow">Portfolio</div><h2>Albums</h2></div></div>
+      <div class="grid" id="grid"></div>
     </section>
+  </div>
 
-    <section id="album-marquee" class="album-marquee" aria-label="Découvrir les autres séries">
-      <div class="marquee-track" id="marquee-track"></div>
-    </section>
+  <!-- ALBUM -->
+  <div id="album" hidden>
+    <nav class="crumb" id="crumb" aria-label="Fil d’Ariane"></nav>
+    <div class="a-head">
+      <h1 id="a-title"></h1>
+      <p class="sub" id="a-sub"></p>
+      <p class="desc" id="a-desc" hidden></p>
+    </div>
+    <div class="grid" id="kids"></div>
+    <div id="rows"></div>
+  </div>
 
-    <section id="apropos" class="about-section">
+  <section id="apropos">
+    <div class="about">
+      <div><div class="eyebrow">Derrière l’objectif</div><div class="mark">dartist.</div></div>
       <div>
-        <div class="eyebrow">Derrière l'objectif</div>
-        <div class="about-mark">dartist.</div>
-      </div>
-      <div class="about-copy">
         <h2>Des instants vécus, des images à revivre.</h2>
-        <p>Photographe depuis 2022, je capture aussi bien l'intensité du sport et des événements que l'atmosphère des rues et des voyages. J'aime les images qui racontent quelque chose, un geste, une lumière, une émotion ou un instant inattendu.</p>
-        <p>Pour une collaboration, un événement ou un projet photo, n'hésitez pas à me contacter.</p>
-        <a class="text-link" href="mailto:dartist.photography@gmail.com">Me contacter ↗</a>
+        <p>Photographe depuis 2022, je capture l’intensité du sport et des événements comme l’atmosphère des rues et des voyages. J’aime les images qui racontent quelque chose : un geste, une lumière, une émotion.</p>
+        <p>Pour une collaboration, un événement ou un projet photo, n’hésitez pas à me contacter.</p>
+        <a class="link" href="mailto:dartist.photography@gmail.com">Me contacter</a>
       </div>
-    </section>
+    </div>
+  </section>
+</main>
 
-    <footer id="contact">
-      <span class="fw">dartist</span>
-      <span>Disponible pour commandes &amp; collaborations</span>
-      <div class="footer-social">
-        <a href="mailto:dartist.photography@gmail.com">dartist.photography@gmail.com</a>
-        <a class="instagram-link" href="https://www.instagram.com/dartist_photography/" target="_blank" rel="noopener noreferrer" aria-label="Mon Instagram" title="Instagram de dartist photography">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
-            <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/>
-            <circle cx="17.5" cy="6.8" r="1.1" fill="currentColor"/>
-          </svg>
-        </a>
-      </div>
-    </footer>
-  </div>
+<footer id="contact">
+  <span>© <span id="year"></span> dartist.</span>
+  <a href="mailto:dartist.photography@gmail.com">dartist.photography@gmail.com</a>
+  <a href="https://www.instagram.com/dartist_photography/" target="_blank" rel="noopener noreferrer">Instagram</a>
+</footer>
 
-  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Visionneuse photo" onclick="fermerLightbox()">
-    <span id="lightbox-counter" class="lb-counter" aria-live="polite"></span>
-    <button class="lb-close" type="button" aria-label="Fermer" onclick="event.stopPropagation(); fermerLightbox()">✕</button>
-    <button class="lb-nav lb-prev" type="button" aria-label="Photo précédente" onclick="event.stopPropagation(); naviguerLightbox(-1)">‹</button>
-    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
-    <button class="lb-nav lb-next" type="button" aria-label="Photo suivante" onclick="event.stopPropagation(); naviguerLightbox(1)">›</button>
-    <button class="lb-fullscreen" type="button" onclick="event.stopPropagation(); basculerPleinEcran()" aria-label="Afficher en plein écran">Plein écran ⛶</button>
-    <p id="lightbox-caption" class="lb-caption"></p>
-  </div>
+<!-- VISIONNEUSE -->
+<div id="lb" role="dialog" aria-modal="true" aria-label="Visionneuse photo">
+  <span class="count" id="lb-count" aria-live="polite"></span>
+  <button class="x" id="lb-x" type="button" aria-label="Fermer">✕</button>
+  <button class="nav prev" id="lb-prev" type="button" aria-label="Photo précédente">‹</button>
+  <img id="lb-img" alt="">
+  <button class="nav next" id="lb-next" type="button" aria-label="Photo suivante">›</button>
+  <p class="legend" id="lb-legend"></p>
+</div>
+<noscript><p class="err">Ce portfolio nécessite JavaScript.</p></noscript>
 
-  <script>
-    const scrollProgress = document.getElementById("scroll-progress");
-    let progressTicking = false;
-    function updateScrollProgress() {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      scrollProgress.style.transform = "scaleX(" + (maxScroll > 0 ? window.scrollY / maxScroll : 0) + ")";
-      progressTicking = false;
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const norm = (p) => { try { return decodeURIComponent(p); } catch { return p; } };
+  const enc = (p) => p.split('/').map(encodeURIComponent).join('/');
+  const stripExt = (p) => p.replace(/\.[^./]+$/, '');
+
+  let SIZES = {}, META = {}, TREE = [];
+
+  /* Chemin d'une photo : version légère (images-opt) si elle existe, sinon l'original. */
+  function url(p, k) {
+    const n = norm(p);
+    if (SIZES[n] && n.startsWith('images/')) return enc(`images-opt/${k}/${stripExt(n.slice(7))}.webp`);
+    return enc(n);
+  }
+  const ratio = (p) => { const s = SIZES[norm(p)]; return s ? s[0] / s[1] : 1.5; };
+
+  /* Fondu à l'affichage de chaque image */
+  document.addEventListener('load', e => { if (e.target.tagName === 'IMG') e.target.classList.add('on'); }, true);
+  document.addEventListener('error', e => { if (e.target.tagName === 'IMG') e.target.classList.add('on'); }, true);
+
+  /* ——— Données ——— */
+  function build(a, parents = []) {
+    const path = [...parents, a.titre];
+    const kids = (a.children || []).map(c => build(c, path)).filter(Boolean);
+    const own = (a.photos || []).map(norm);
+    const all = [...own, ...kids.flatMap(k => k.all)];
+    if (!all.length) return null; // albums vides masqués
+    return { titre: a.titre, sujet: a.sujet || '', description: a.description || '', path, own, kids, all,
+             cover: a.cover ? norm(a.cover) : all[0] };
+  }
+  const href = (path) => '#/a/' + path.map(encodeURIComponent).join('/');
+  const leaves = (list) => list.flatMap(a => [...(a.own.length ? [a] : []), ...leaves(a.kids)]);
+  function find(path) {
+    let list = TREE, cur = null;
+    for (const t of path) { cur = list.find(a => a.titre === t); if (!cur) return null; list = cur.kids; }
+    return cur;
+  }
+  const count = (a) => `${a.all.length} photo${a.all.length > 1 ? 's' : ''}`;
+  const card = (a) => `<a class="card" href="${href(a.path)}"><div class="ph"><img src="${url(a.cover, 's')}" alt="Album ${esc(a.titre)}" loading="lazy" decoding="async"></div><div class="cap"><h3>${esc(a.titre)}</h3><span>${count(a)}</span></div></a>`;
+
+  /* ——— Accueil ——— */
+  function renderHome(heroPath, heroPos) {
+    if (heroPath) {
+      const img = $('#hero-img');
+      img.srcset = `${url(heroPath, 's')} 800w, ${url(heroPath, 'm')} 2000w`;
+      img.sizes = '100vw';
+      img.src = url(heroPath, 'm');
+      img.style.objectPosition = heroPos || 'center';
     }
-    window.addEventListener("scroll", () => {
-      if (!progressTicking) { window.requestAnimationFrame(updateScrollProgress); progressTicking = true; }
-    }, { passive: true });
-    window.addEventListener("resize", updateScrollProgress, { passive: true });
-    updateScrollProgress();
+    $('#car').innerHTML = leaves(TREE).map(a =>
+      `<a class="slide" href="${href(a.path)}"><div class="ph"><img src="${url(a.cover, 's')}" alt="Album ${esc(a.titre)}" loading="lazy" decoding="async"></div><div class="cap"><h3>${esc(a.titre)}</h3><span>${esc(a.sujet.split('·')[0].trim())}</span></div></a>`
+    ).join('');
+    $('#grid').innerHTML = TREE.map(card).join('');
+  }
 
-    let portfolioData = [];
+  /* ——— Album : photos en rangées justifiées ——— */
+  let items = [], lbList = [];
+  const rowsBox = $('#rows');
 
-    const albumsView = document.getElementById("albums-view");
-    const photoView = document.getElementById("photo-view");
-    const travaux = document.getElementById("travaux");
-    const photosContainer = document.getElementById("photos-container");
-    const currentAlbumTitle = document.getElementById("current-album-title");
-    const currentAlbumSub = document.getElementById("current-album-sub");
-    const currentAlbumDescription = document.getElementById("current-album-description");
-    const seriesCount = document.getElementById("series-count");
-    const seriesSearch = document.getElementById("series-search");
-    const searchStatus = document.getElementById("search-status");
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightbox-img");
-    const lightboxCounter = document.getElementById("lightbox-counter");
-    const lightboxCaption = document.getElementById("lightbox-caption");
-    let photoMetadata = {};
-    let touchStartX = null;
-    let touchStartY = null;
-    let lightboxItems = [];
-    let lightboxIndex = 0;
-    function parcourirAlbums(albums) {
-      for (const album of (albums || [])) {
-        if (album.children) {
-          const nested = parcourirAlbums(album.children);
-          if (nested) return nested;
-        }
-        if (album.cover && album.photos && album.photos.length) return { album, photo: album.cover };
-        if (album.cover) return { album, photo: album.cover };
-      }
-      return null;
-    }
+  function renderAlbum(a) {
+    $('#crumb').innerHTML = `<a href="#albums">Albums</a>` +
+      a.path.slice(0, -1).map((t, i) => `<span>/</span><a href="${href(a.path.slice(0, i + 1))}">${esc(t)}</a>`).join('');
+    $('#a-title').textContent = a.titre;
+    $('#a-sub').textContent = `${a.sujet ? a.sujet + ' · ' : ''}${count(a)}`;
+    const d = $('#a-desc'); d.textContent = a.description; d.hidden = !a.description;
+    const kids = $('#kids'); kids.innerHTML = a.kids.map(card).join(''); kids.hidden = !a.kids.length;
 
-    const albumMarquee = document.getElementById("album-marquee");
-    const marqueeTrack = document.getElementById("marquee-track");
-    let marqueeFrame = null;
-    let marqueeLastTime = 0;
-    let marqueePaused = false;
-    let marqueePointerDown = false;
-    let marqueeDragStartX = 0;
-    let marqueeDragStartScroll = 0;
-    let marqueeDragged = false;
-
-    function obtenirAlbumsNavigables() {
-      const items = [];
-      function parcourir(albums, parents = []) {
-        albums.forEach((album) => {
-          // Les dossiers qui ne contiennent que des sous-albums ne sont pas affichés.
-          if (Array.isArray(album.children) && album.children.length) {
-            parcourir(album.children, [...parents, album.titre]);
-            return;
-          }
-          const image = album.cover || (album.photos && album.photos[0]) || "";
-          if (!image) return;
-          items.push({ album, image, parents });
-        });
-      }
-      parcourir(portfolioData);
-      return items;
-    }
-
-    function afficherMenuDefilant() {
-      marqueeTrack.innerHTML = "";
-      const items = obtenirAlbumsNavigables();
-      if (!items.length) return;
-
-      // Deux copies identiques permettent une boucle continue sans saut visible.
-      for (let repetition = 0; repetition < 2; repetition++) {
-        items.forEach(({ album, image, parents }, index) => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "marquee-album";
-          button.draggable = false;
-          button.setAttribute("aria-label", "Ouvrir la série " + album.titre);
-          if (repetition === 1) button.setAttribute("tabindex", "-1");
-          const img = document.createElement("img");
-          img.src = image;
-          img.alt = "";
-          img.loading = "lazy";
-          img.draggable = false;
-          img.onerror = () => button.remove();
-          const title = document.createElement("span");
-          title.textContent = album.titre;
-          button.append(img, title);
-          button.addEventListener("click", () => {
-            // Un clic déclenché après un glissement ne doit pas ouvrir l'album.
-            // Réinitialiser immédiatement évite de bloquer aussi le clic suivant.
-            const wasDragged = marqueeDragged;
-            marqueeDragged = false;
-            if (wasDragged) return;
-            if (!album.children || album.children.length === 0) {
-              window.location.href = "?album=" + encodeURIComponent(album.titre);
-            } else if (parents.length === 0) {
-              const index = portfolioData.indexOf(album);
-              if (index >= 0) ouvrirAlbum(index);
-            } else {
-              ouvrirSousAlbum(album);
-            }
-          });
-          marqueeTrack.appendChild(button);
-        });
-      }
-      requestAnimationFrame(() => {
-        albumMarquee.scrollLeft = 0;
-        demarrerDefilementMenu();
-      });
-    }
-
-    function demarrerDefilementMenu() {
-      if (marqueeFrame) cancelAnimationFrame(marqueeFrame);
-      marqueeLastTime = 0;
-      const step = (time) => {
-        if (!marqueeLastTime) marqueeLastTime = time;
-        const delta = Math.min(time - marqueeLastTime, 40);
-        marqueeLastTime = time;
-        if (!marqueePaused && !marqueePointerDown && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          albumMarquee.scrollLeft += delta * 0.06;
-          const loopWidth = marqueeTrack.scrollWidth / 2;
-          if (loopWidth > 0 && albumMarquee.scrollLeft >= loopWidth) albumMarquee.scrollLeft -= loopWidth;
-        }
-        marqueeFrame = requestAnimationFrame(step);
-      };
-      marqueeFrame = requestAnimationFrame(step);
-    }
-
-    albumMarquee.addEventListener("pointerdown", (event) => {
-      if (event.pointerType === "mouse" && event.button !== 0) return;
-      marqueePointerDown = true;
-      marqueeDragged = false;
-      marqueeDragStartX = event.clientX;
-      marqueeDragStartScroll = albumMarquee.scrollLeft;
-      albumMarquee.classList.add("dragging");
-      // Ne pas capturer le pointeur sur le conteneur : cela détourne la cible
-      // du clic et empêche le bouton de vignette de recevoir son événement.
+    lbList = a.own;
+    items = a.own.map((p, i) => {
+      const el = document.createElement('button');
+      el.type = 'button'; el.className = 'it'; el.dataset.i = i;
+      el.setAttribute('aria-label', `Ouvrir la photo ${i + 1}`);
+      el.innerHTML = `<img src="${url(p, 's')}" alt="${esc(a.titre)} — photo ${i + 1}" loading="lazy" decoding="async">`;
+      return { el, r: ratio(p) };
     });
-    window.addEventListener("pointermove", (event) => {
-      if (!marqueePointerDown) return;
-      const distance = event.clientX - marqueeDragStartX;
-      if (Math.abs(distance) > 5) marqueeDragged = true;
-      if (marqueeDragged) albumMarquee.scrollLeft = marqueeDragStartScroll - distance;
-    });
-    function terminerGlissementMenu() {
-      marqueePointerDown = false;
-      albumMarquee.classList.remove("dragging");
-      if (marqueeDragged) setTimeout(() => { marqueeDragged = false; }, 80);
+    layout();
+  }
+
+  function layout() {
+    const W = rowsBox.clientWidth;
+    rowsBox.textContent = '';
+    if (!W || !items.length) return;
+    const gap = 6, target = W < 600 ? 160 : W < 1100 ? 220 : 280;
+    let row = [], sum = 0;
+    const flush = (last) => {
+      const g = gap * (row.length - 1);
+      const stretch = !last || sum * target + g >= W * 0.7;
+      const h = stretch ? (W - g) / sum : target;
+      const div = document.createElement('div');
+      div.className = 'row'; div.style.height = h + 'px';
+      row.forEach(it => { it.el.style.flex = stretch ? `${it.r} 1 0` : `0 0 ${it.r * h}px`; div.appendChild(it.el); });
+      rowsBox.appendChild(div); row = []; sum = 0;
+    };
+    items.forEach(it => { row.push(it); sum += it.r; if (sum * target + gap * (row.length - 1) >= W) flush(false); });
+    if (row.length) flush(true);
+  }
+  let lastW = 0;
+  new ResizeObserver(() => { const w = rowsBox.clientWidth; if (w !== lastW) { lastW = w; layout(); } }).observe(rowsBox);
+
+  rowsBox.addEventListener('click', e => {
+    const b = e.target.closest('.it'); if (b) openLb(+b.dataset.i);
+  });
+
+  /* ——— Visionneuse ——— */
+  const lb = $('#lb'), lbImg = $('#lb-img');
+  let idx = 0, lastFocus = null;
+
+  function showLb(i) {
+    const n = lbList.length; if (!n) return;
+    idx = (i + n) % n;
+    const p = lbList[idx];
+    lbImg.style.opacity = '.25';
+    lbImg.onload = () => { lbImg.style.opacity = '1'; };
+    lbImg.src = url(p, 'm');
+    lbImg.alt = `Photo ${idx + 1} sur ${n}`;
+    $('#lb-count').textContent = `${idx + 1} / ${n}`;
+    const m = META[stripExt(norm(p))];
+    $('#lb-legend').textContent = m ? [m.lieu, m.date, m.contexte].filter(Boolean).join(' · ') : '';
+    [idx - 1, idx + 1].forEach(j => { new Image().src = url(lbList[(j + n) % n], 'm'); });
+  }
+  function openLb(i) {
+    lastFocus = document.activeElement;
+    lb.classList.add('open');
+    document.documentElement.style.overflow = 'hidden';
+    showLb(i);
+    $('#lb-x').focus();
+  }
+  function closeLb() {
+    if (!lb.classList.contains('open')) return;
+    lb.classList.remove('open');
+    document.documentElement.style.overflow = '';
+    lbImg.removeAttribute('src');
+    if (lastFocus) lastFocus.focus({ preventScroll: true });
+  }
+  $('#lb-x').onclick = closeLb;
+  $('#lb-prev').onclick = () => showLb(idx - 1);
+  $('#lb-next').onclick = () => showLb(idx + 1);
+  lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLb();
+    else if (e.key === 'ArrowLeft') showLb(idx - 1);
+    else if (e.key === 'ArrowRight') showLb(idx + 1);
+  });
+  let tx = null;
+  lb.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx; tx = null;
+    if (Math.abs(dx) > 50) showLb(idx + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+
+  /* ——— Carrousel : flèches ——— */
+  const car = $('#car');
+  $('#car-prev').onclick = () => car.scrollBy({ left: -car.clientWidth * 0.8, behavior: 'smooth' });
+  $('#car-next').onclick = () => car.scrollBy({ left: car.clientWidth * 0.8, behavior: 'smooth' });
+
+  /* ——— Barre + routage ——— */
+  const bar = $('#bar');
+  let scrolled = false, inAlbum = false;
+  const updateBar = () => bar.classList.toggle('solid', scrolled || inAlbum);
+  new IntersectionObserver(([e]) => { scrolled = !e.isIntersecting; updateBar(); }).observe($('#top-sentinel'));
+
+  function route() {
+    const h = location.hash;
+    let a = null;
+    if (h.startsWith('#/a/')) {
+      const path = h.slice(4).split('/').filter(Boolean).map(norm);
+      a = find(path);
     }
-    window.addEventListener("pointerup", terminerGlissementMenu);
-    window.addEventListener("pointercancel", terminerGlissementMenu);
-    albumMarquee.addEventListener("mouseenter", () => { marqueePaused = true; });
-    albumMarquee.addEventListener("mouseleave", () => { marqueePaused = false; });
-    albumMarquee.addEventListener("focusin", () => { marqueePaused = true; });
-    albumMarquee.addEventListener("focusout", () => { marqueePaused = false; });
-
-    function afficherAlbums() {
-      albumsView.innerHTML = "";
-      const query = seriesSearch.value.trim().toLocaleLowerCase("fr");
-      const albumsFiltres = portfolioData.filter(album => (album.titre + " " + (album.sujet || "")).toLocaleLowerCase("fr").includes(query));
-      seriesCount.textContent = String(portfolioData.length).padStart(2, "0") + " séries";
-      searchStatus.textContent = query ? albumsFiltres.length + " résultat" + (albumsFiltres.length > 1 ? "s" : "") : "Explorer les séries";
-      if (!albumsFiltres.length) {
-        albumsView.innerHTML = '<p class="no-search-results">Aucune série ne correspond à votre recherche.</p>';
-        return;
-      }
-      albumsFiltres.forEach((album) => {
-        const index = portfolioData.indexOf(album);
-        const card = document.createElement("button");
-        card.className = "album-card";
-        card.onclick = () => ouvrirAlbum(index);
-        card.innerHTML = `
-          <div class="album-frame">
-            <span class="album-index">${String(index + 1).padStart(2, "0")}</span>
-            <img src="${album.cover}" alt="Série : ${album.titre}" loading="lazy" onerror="this.style.visibility='hidden'; console.error('Image introuvable :', this.src)" />
-            <span class="album-view">Voir la série</span>
-          </div>
-          <div class="album-info">
-            <span class="album-title">${album.titre}</span>
-            <span class="album-count">${album.children ? album.children.length + " sous-séries" : album.photos.length ? album.photos.length + " clichés" : "À compléter"}</span>
-          </div>
-        `;
-        albumsView.appendChild(card);
-      });
-
+    closeLb();
+    const wasAlbum = inAlbum;
+    inAlbum = !!a;
+    $('#home').hidden = inAlbum;
+    $('#album').hidden = !inAlbum;
+    updateBar();
+    if (a) {
+      renderAlbum(a);
+      document.title = `${a.titre} — dartist.`;
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    } else {
+      document.title = 'dartist. — Photographe';
+      const t = h.length > 1 && !h.startsWith('#/') ? document.getElementById(h.slice(1)) : null;
+      if (t) t.scrollIntoView();
+      else if (wasAlbum || !h) window.scrollTo({ top: 0, behavior: 'instant' });
     }
-    seriesSearch.addEventListener("input", afficherAlbums);
+  }
+  window.addEventListener('hashchange', route);
 
-    function afficherPhotoPrincipale(album) {
-      if (!album || album.children || !album.cover) return;
-      const featured = document.createElement("button");
-      featured.type = "button";
-      featured.className = "featured-photo";
-      featured.setAttribute("aria-label", "Agrandir la photo principale de " + album.titre);
-      featured.onclick = () => ouvrirLightbox(album.cover, album.titre + " · photo principale");
-      const image = document.createElement("img");
-      image.src = album.cover;
-      image.dataset.photoPath = album.cover;
-      image.alt = album.titre + " · photo principale";
-      image.loading = "eager";
-      image.onerror = () => featured.remove();
-      featured.appendChild(image);
-      photosContainer.appendChild(featured);
-
+  /* ——— Démarrage ——— */
+  async function init() {
+    $('#year').textContent = new Date().getFullYear();
+    try {
+      const [m, s] = await Promise.all([
+        fetch('images-manifest.json').then(r => { if (!r.ok) throw 0; return r.json(); }),
+        fetch('images-opt/sizes.json').then(r => r.ok ? r.json() : {}).catch(() => ({}))
+      ]);
+      SIZES = s;
+      Object.entries(m.photoMetadata || {}).forEach(([k, v]) => { META[stripExt(norm(k))] = v; });
+      TREE = (m.albums || []).map(a => build(a)).filter(Boolean);
+      const heroPath = (m.hero && m.hero.image) || (TREE[0] && TREE[0].cover);
+      renderHome(heroPath, m.hero && m.hero.position);
+      route();
+    } catch (e) {
+      $('#home').innerHTML = '<p class="err">Impossible de charger le portfolio pour le moment.</p>';
     }
-
-    function trouverAlbumParChemin(titre) {
-      let result = null;
-      function parcourir(albums, parents = []) {
-        for (const album of albums || []) {
-          if (album.titre === titre) {
-            result = { album, parents, albumIndex: parents.length === 0 ? portfolioData.indexOf(album) : -1 };
-            return true;
-          }
-          if (album.children && parcourir(album.children, [...parents, album.titre])) return true;
-        }
-        return false;
-      }
-      parcourir(portfolioData);
-      return result;
-    }
-
-    function ouvrirAlbum(index) {
-      const album = portfolioData[index];
-      if (album && (!album.children || album.children.length === 0) && !new URLSearchParams(window.location.search).has("album")) {
-        window.location.href = "?album=" + encodeURIComponent(album.titre);
-        return;
-      }
-      currentAlbumTitle.textContent = album.titre;
-      currentAlbumSub.textContent = album.sujet + (album.children ? " · " + album.children.length + " sous-séries" : album.photos.length ? " · " + album.photos.length + " clichés" : " · Série à compléter");
-      currentAlbumDescription.textContent = album.description || "";
-      currentAlbumDescription.hidden = !album.description;
-      photosContainer.innerHTML = "";
-      photosContainer.classList.toggle("subseries-grid", Boolean(album.children));
-      afficherPhotoPrincipale(album);
-
-      if (album.children) {
-        album.children.forEach((child, childIndex) => {
-          const card = document.createElement("button");
-          card.className = "album-card";
-          card.onclick = () => {
-            if (!child.children || child.children.length === 0) window.location.href = "?album=" + encodeURIComponent(child.titre);
-            else ouvrirSousAlbum(child);
-          };
-          const frame = document.createElement("div"); frame.className = "album-frame";
-          if (child.cover) {
-            const image = document.createElement("img"); image.src = child.cover; image.alt = "Série : " + child.titre; image.loading = "lazy";
-            image.onerror = () => { image.style.visibility = "hidden"; };
-            frame.appendChild(image);
-          } else {
-            const placeholder = document.createElement("div"); placeholder.className = "album-placeholder"; frame.appendChild(placeholder);
-          }
-          const title = document.createElement("div"); title.className = "album-info";
-          const name = document.createElement("span"); name.className = "album-title"; name.textContent = child.titre;
-          const count = document.createElement("span"); count.className = "album-count"; count.textContent = child.children ? child.children.length + " sous-séries" : child.photos.length ? child.photos.length + " clichés" : "À compléter";
-          frame.insertAdjacentHTML("beforeend", '<span class="album-view">Voir la série</span>');
-          title.append(name, count); card.append(frame, title); photosContainer.appendChild(card);
-        });
-      } else if (!album.photos.length) {
-        photosContainer.innerHTML = '<p class="empty-series">Les photos de cette série seront ajoutées prochainement.</p>';
-      }
-
-      album.photos.filter(photo => photo !== album.cover).forEach((photo, i) => {
-        const item = document.createElement("button");
-        item.className = "photo-item";
-        item.onclick = () => ouvrirLightbox(photo, album.titre + " · cliché " + (i + 1));
-        const image = document.createElement("img");
-        image.src = photo;
-        image.alt = album.titre + " · cliché " + (i + 1);
-        image.loading = "lazy";
-        image.dataset.photoPath = photo;
-        image.onerror = () => { image.style.visibility = "hidden"; console.error("Image introuvable :", image.src); };
-        item.appendChild(image);
-        photosContainer.appendChild(item);
-      });
-
-      travaux.style.display = "none";
-      photoView.style.display = "block";
-      albumMarquee.classList.add("visible");
-      photoView.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function ouvrirSousAlbum(child) {
-      currentAlbumTitle.textContent = child.titre;
-      currentAlbumSub.textContent = child.sujet + (child.children ? " · " + child.children.length + " sous-séries" : child.photos.length ? " · " + child.photos.length + " clichés" : " · Série à compléter");
-      currentAlbumDescription.textContent = child.description || "";
-      currentAlbumDescription.hidden = !child.description;
-      photosContainer.innerHTML = "";
-      photosContainer.classList.toggle("subseries-grid", Boolean(child.children));
-      afficherPhotoPrincipale(child);
-      if (child.children) {
-        child.children.forEach((nested, nestedIndex) => {
-          const card = document.createElement("button");
-          card.className = "album-card";
-          card.onclick = () => {
-            if (!nested.children || nested.children.length === 0) window.location.href = "?album=" + encodeURIComponent(nested.titre);
-            else ouvrirSousAlbum(nested);
-          };
-          const frame = document.createElement("div"); frame.className = "album-frame";
-          if (nested.cover) {
-            const image = document.createElement("img"); image.src = nested.cover; image.alt = "Série : " + nested.titre; image.loading = "lazy";
-            frame.appendChild(image);
-          } else {
-            const placeholder = document.createElement("div"); placeholder.className = "album-placeholder"; frame.appendChild(placeholder);
-          }
-          const title = document.createElement("div"); title.className = "album-info";
-          const name = document.createElement("span"); name.className = "album-title"; name.textContent = nested.titre;
-          const count = document.createElement("span"); count.className = "album-count"; count.textContent = nested.photos.length ? nested.photos.length + " clichés" : "À compléter";
-          title.append(name, count); card.append(frame, title); photosContainer.appendChild(card);
-        });
-      }
-      if (!child.photos.length && !child.children) {
-        photosContainer.innerHTML = '<p class="empty-series">Les photos de cette série seront ajoutées prochainement.</p>';
-      }
-      child.photos.filter(photo => photo !== child.cover).forEach((photo, i) => {
-        const item = document.createElement("button");
-        item.className = "photo-item";
-        item.onclick = () => ouvrirLightbox(photo, child.titre + " · cliché " + (i + 1));
-        const image = document.createElement("img");
-        image.src = photo;
-        image.alt = child.titre + " · cliché " + (i + 1);
-        image.loading = "lazy";
-        image.dataset.photoPath = photo;
-        item.appendChild(image);
-        photosContainer.appendChild(item);
-      });
-
-      albumMarquee.classList.add("visible");
-      photoView.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function revenirEnArriereAlbum() {
-      if (window.history.length > 1 && document.referrer && new URL(document.referrer).origin === window.location.origin) {
-        window.history.back();
-      } else {
-        window.location.href = "./";
-      }
-    }
-
-    function fermerAlbum() {
-      photoView.style.display = "none";
-      albumMarquee.classList.remove("visible");
-      travaux.style.display = "block";
-    }
-
-    function ouvrirLightbox(src, alt) {
-      lightboxItems = Array.from(photosContainer.querySelectorAll(".featured-photo img, .photo-item img"))
-        .filter(image => image.src)
-        .map(image => {
-          const path = image.dataset.photoPath || image.getAttribute("src") || image.src;
-          return { src: image.src, alt: image.alt || alt, path, metadata: metadataPourPhoto(path) };
-        });
-      if (!lightboxItems.length) lightboxItems = [{ src: new URL(src, window.location.href).href, alt, path: src, metadata: metadataPourPhoto(src) }];
-      const requestedSrc = new URL(src, window.location.href).href;
-      const foundIndex = lightboxItems.findIndex(item => item.src === requestedSrc);
-      lightboxIndex = foundIndex >= 0 ? foundIndex : 0;
-      afficherImageLightbox();
-      lightbox.classList.add("open");
-      document.body.style.overflow = "hidden";
-      lightbox.querySelector(".lb-close").focus();
-    }
-    function afficherImageLightbox() {
-      const item = lightboxItems[lightboxIndex];
-      if (!item) return;
-      lightboxImg.src = item.src;
-      lightboxImg.alt = item.alt;
-      const details = [item.metadata?.lieu, item.metadata?.date, item.metadata?.contexte].filter(Boolean);
-      lightboxCaption.textContent = item.alt + (details.length ? " · " + details.join(" · ") : "");
-      lightboxCounter.textContent = (lightboxIndex + 1) + " / " + lightboxItems.length;
-      lightbox.querySelectorAll(".lb-nav").forEach(button => { button.hidden = lightboxItems.length < 2; });
-    }
-    function metadataPourPhoto(path) {
-      if (!path || !photoMetadata) return null;
-      const cleanPath = decodeURIComponent(String(path).split("?")[0]);
-      return photoMetadata[path] || photoMetadata[cleanPath] || photoMetadata[encodeURI(cleanPath)] || null;
-    }
-
-    async function basculerPleinEcran() {
-      try {
-        if (!document.fullscreenElement) await lightbox.requestFullscreen?.();
-        else await document.exitFullscreen?.();
-      } catch (error) {
-        console.warn("Le mode plein écran n'est pas disponible dans ce navigateur.", error);
-      }
-    }
-
-    function naviguerLightbox(direction) {
-      if (!lightboxItems.length) return;
-      lightboxIndex = (lightboxIndex + direction + lightboxItems.length) % lightboxItems.length;
-      afficherImageLightbox();
-    }
-    function fermerLightbox() {
-      lightbox.classList.remove("open");
-      document.body.style.overflow = "";
-    }
-    document.addEventListener("keydown", (e) => {
-      if (!lightbox.classList.contains("open")) return;
-      if (e.key === "Escape") fermerLightbox();
-      if (e.key === "ArrowLeft") naviguerLightbox(-1);
-      if (e.key === "ArrowRight") naviguerLightbox(1);
-      if (e.key === "f" || e.key === "F") basculerPleinEcran();
-    });
-    lightbox.addEventListener("touchstart", (event) => {
-      if (!lightbox.classList.contains("open") || !event.changedTouches.length) return;
-      touchStartX = event.changedTouches[0].clientX;
-      touchStartY = event.changedTouches[0].clientY;
-    }, { passive: true });
-    lightbox.addEventListener("touchend", (event) => {
-      if (touchStartX === null || touchStartY === null || !event.changedTouches.length) return;
-      const dx = event.changedTouches[0].clientX - touchStartX;
-      const dy = event.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.2) naviguerLightbox(dx < 0 ? 1 : -1);
-      touchStartX = null;
-      touchStartY = null;
-    }, { passive: true });
-
-
-    const themeToggle = document.getElementById("theme-toggle");
-    const themeIcon = document.getElementById("theme-icon");
-    const themeLabel = document.getElementById("theme-label");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-
-    function appliquerTheme(theme) {
-      document.documentElement.dataset.theme = theme;
-      const sombre = theme === "dark";
-      themeIcon.textContent = sombre ? "☀" : "☾";
-      themeLabel.textContent = sombre ? "Clair" : "Sombre";
-      themeToggle.setAttribute("aria-label", sombre ? "Activer le thème clair" : "Activer le thème sombre");
-    }
-
-    // Sans choix manuel, le thème suit automatiquement les réglages de l'appareil.
-    const themeEnregistre = null;
-    appliquerTheme(themeEnregistre || (prefersDark.matches ? "dark" : "light"));
-    themeToggle.addEventListener("click", () => {
-      appliquerTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
-    });
-    prefersDark.addEventListener?.("change", (event) => {
-      if (!document.documentElement.dataset.themeManuel) appliquerTheme(event.matches ? "dark" : "light");
-    });
-    themeToggle.addEventListener("click", () => {
-      document.documentElement.dataset.themeManuel = "true";
-    });
-
-
-    async function chargerPortfolio() {
-      try {
-        const response = await fetch("images-manifest.json", { cache: "no-cache" });
-        if (!response.ok) throw new Error("Le manifeste du portfolio est indisponible.");
-        const data = await response.json();
-        if (!data || !Array.isArray(data.albums)) throw new Error("Format de manifeste invalide.");
-        if (data.hero && data.hero.image) {
-          const imagePath = data.hero.image.replace(/["\\\\]/g, "");
-          document.querySelector(".hero").style.setProperty("--hero-image", 'url("' + imagePath + '")');
-          if (data.hero.position) {
-            document.querySelector(".hero").style.setProperty("--hero-position", data.hero.position);
-          }
-        }
-        portfolioData = data.albums;
-        photoMetadata = data.photoMetadata || {};
-
-        afficherAlbums();
-        afficherMenuDefilant();
-        const requestedAlbum = new URLSearchParams(window.location.search).get("album");
-        if (requestedAlbum) {
-          const found = trouverAlbumParChemin(requestedAlbum);
-          if (found) {
-            document.body.classList.add("album-standalone");
-            if (found.parents.length === 0) ouvrirAlbum(found.albumIndex);
-            else ouvrirSousAlbum(found.album);
-            albumMarquee.classList.add("visible");
-            window.scrollTo(0, 0);
-          }
-        }
-      } catch (error) {
-        albumsView.innerHTML = '<p class="empty-series">Impossible de charger les séries pour le moment. Réessayez dans quelques instants.</p>';
-        console.error("Chargement du portfolio :", error);
-      }
-    }
-    chargerPortfolio();
-  </script>
-  <script src="./scripts/cursor/target-cursor.js?v=20261027-3" defer></script>
+  }
+  init();
+})();
+</script>
 </body>
 </html>
