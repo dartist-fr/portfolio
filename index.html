@@ -64,6 +64,7 @@
     @keyframes heroTextIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .hero h1 em { color: #f0b18f; }
     .album-frame { isolation: isolate; }
+    .image-unavailable { width: 100%; min-height: 180px; height: 100%; display: grid; place-items: center; padding: 1rem; background: var(--paper-2); color: var(--ink-soft); font-size: .82rem; text-align: center; }
     .album-frame::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .3s ease; background: linear-gradient(145deg, rgba(255,255,255,.12), transparent 42%); }
     .album-card:hover .album-frame::after, .album-card:focus-visible .album-frame::after { opacity: 1; }
     .album-index, .album-view { z-index: 3; }
@@ -712,7 +713,13 @@
           img.alt = "";
           img.loading = "lazy";
           img.draggable = false;
-          img.onerror = () => button.remove();
+          img.onerror = () => {
+            const fallback = document.createElement("span");
+            fallback.className = "image-unavailable";
+            fallback.textContent = "Photo indisponible";
+            img.replaceWith(fallback);
+            console.error("Image introuvable :", img.src);
+          };
           const title = document.createElement("span");
           title.textContent = album.titre;
           button.append(img, title);
@@ -803,7 +810,7 @@
         card.innerHTML = `
           <div class="album-frame">
             <span class="album-index">${String(index + 1).padStart(2, "0")}</span>
-            <img src="${album.cover}" alt="Série : ${album.titre}" loading="lazy" onerror="this.style.visibility='hidden'; console.error('Image introuvable :', this.src)" />
+            <img src="${album.cover}" alt="Série : ${album.titre}" loading="lazy" onerror="this.onerror=null; this.style.visibility='hidden'; console.error('Image introuvable :', this.src)" />
             <span class="album-view">Voir la série</span>
           </div>
           <div class="album-info">
@@ -829,7 +836,13 @@
       image.dataset.photoPath = album.cover;
       image.alt = album.titre + " · photo principale";
       image.loading = "eager";
-      image.onerror = () => featured.remove();
+      image.onerror = () => {
+        const fallback = document.createElement("span");
+        fallback.className = "image-unavailable";
+        fallback.textContent = "Photo indisponible";
+        image.replaceWith(fallback);
+        console.error("Image de couverture introuvable :", image.src);
+      };
       featured.appendChild(image);
       photosContainer.appendChild(featured);
 
@@ -876,7 +889,13 @@
           const frame = document.createElement("div"); frame.className = "album-frame";
           if (child.cover) {
             const image = document.createElement("img"); image.src = child.cover; image.alt = "Série : " + child.titre; image.loading = "lazy";
-            image.onerror = () => { image.style.visibility = "hidden"; };
+            image.onerror = () => {
+              const fallback = document.createElement("span");
+              fallback.className = "image-unavailable";
+              fallback.textContent = "Photo indisponible";
+              image.replaceWith(fallback);
+              console.error("Image introuvable :", image.src);
+            };
             frame.appendChild(image);
           } else {
             const placeholder = document.createElement("div"); placeholder.className = "album-placeholder"; frame.appendChild(placeholder);
@@ -900,7 +919,13 @@
         image.alt = album.titre + " · cliché " + (i + 1);
         image.loading = "lazy";
         image.dataset.photoPath = photo;
-        image.onerror = () => { image.style.visibility = "hidden"; console.error("Image introuvable :", image.src); };
+        image.onerror = () => {
+          const fallback = document.createElement("span");
+          fallback.className = "image-unavailable";
+          fallback.textContent = "Photo indisponible";
+          image.replaceWith(fallback);
+          console.error("Image introuvable :", image.src);
+        };
         item.appendChild(image);
         photosContainer.appendChild(item);
       });
