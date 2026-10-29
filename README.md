@@ -25,7 +25,8 @@ Portfolio de **dartist.**, photographe depuis 2022. Le site rassemble des série
 - `index.html` : page du site.
 - `images/` : photos classées par séries et sous-séries.
 - `images-manifest.json` : données des albums utilisées par le site.
-- `scripts/` : scripts d’automatisation et curseur personnalisé.
+- `scripts/` : scripts d’automatisation et de validation.
+- `archive/target-cursor/` : sources archivées du curseur personnalisé, désactivé sur le site.
 - `docs/README-AUTOMATISATION.md` : guide pour ajouter des séries et automatiser le portfolio.
 - `.github/workflows/` : automatisations GitHub Actions.
 
