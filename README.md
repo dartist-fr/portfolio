@@ -12,10 +12,10 @@ Portfolio de **dartist.**, photographe depuis 2022. Le site rassemble des série
 
 - **Galerie organisée en albums et sous-albums** pour parcourir les différentes séries.
 - **Affichage des photos** dans une visionneuse.
-- **Recherche de séries** depuis la page d’accueil.
 - **Interface responsive**, adaptée aux ordinateurs, tablettes et téléphones.
-- **Thème clair ou sombre**.
-- **Carrousel de séries cliquable** en bas de page : défilement automatique, glissement à la souris ou au doigt, et clic sur une vignette pour ouvrir la série ou sous-série correspondante.
+- **Page d'accueil avec grande photo, carrousel de sélection et grille d'albums**.
+- **Photos en rangées justifiées avec visionneuse (clavier et swipe)**.
+- **Versions légères des photos générées automatiquement**.
 - **Favicon personnalisé** aux couleurs de dartist.
 - **Descriptions personnalisées par album** : chaque série ou sous-série peut afficher un texte sous son titre.
 - **Métadonnées facultatives** pour afficher le lieu, la date et le contexte d’une photo.
@@ -25,7 +25,8 @@ Portfolio de **dartist.**, photographe depuis 2022. Le site rassemble des série
 - `index.html` : page du site.
 - `images/` : photos classées par séries et sous-séries.
 - `images-manifest.json` : données des albums utilisées par le site.
-- `scripts/` : scripts d’automatisation et curseur personnalisé.
+- `scripts/` : scripts d’automatisation, dont `scripts/optimize-images.py` pour générer les versions légères.
+- `images-opt/` : versions optimisées générées automatiquement et `images-opt/sizes.json` (ne pas modifier à la main).
 - `docs/README-AUTOMATISATION.md` : guide pour ajouter des séries et automatiser le portfolio.
 - `.github/workflows/` : automatisations GitHub Actions.
 
