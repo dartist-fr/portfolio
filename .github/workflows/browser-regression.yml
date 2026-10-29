@@ -1,0 +1,62 @@
+name: Tests navigateur du portfolio
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-regression:
+    name: Tests Chromium (local)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Installer Playwright
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Démarrer le serveur statique
+        run: |
+          python -m http.server 8000 --bind 127.0.0.1 > /tmp/portfolio-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl --silent --fail http://127.0.0.1:8000/ > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/portfolio-http.log
+          exit 1
+      - name: Tester les parcours, la visionneuse, le thème et le mobile
+        env:
+          BASE_URL: http://127.0.0.1:8000/
+        run: python tests/test_portfolio_browser.py
+
+  published-smoke:
+    name: Vérification du site publié
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: browser-regression
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+      - name: Installer Python et Chromium
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Installer Playwright
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Tester les parcours sur GitHub Pages
+        env:
+          BASE_URL: https://dartist-fr.github.io/portfolio/
+        run: python tests/test_portfolio_browser.py
