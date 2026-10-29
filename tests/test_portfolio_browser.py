@@ -66,6 +66,31 @@ class PortfolioBrowserRegression(unittest.TestCase):
         self.assertGreater(len(manifest["albums"]), 0)
         self.assertEqual(self.errors, [], f"JavaScript errors: {self.errors}")
 
+    def test_gallery_images_use_async_decoding(self):
+        self.page.goto(urljoin(BASE_URL, "?album=Divers"), wait_until="domcontentloaded")
+        self.page.locator("#photo-view").wait_for(state="visible", timeout=15000)
+        self.page.locator(".featured-photo img").wait_for(state="attached", timeout=15000)
+        self.page.locator(".photo-item img").first.wait_for(state="attached", timeout=15000)
+
+        self.assertEqual(
+            self.page.locator(".featured-photo img").get_attribute("decoding"),
+            "async",
+            "La photo principale doit utiliser le décodage asynchrone.",
+        )
+        gallery_decoding = self.page.locator(".photo-item img").evaluate_all(
+            "(images) => images.map((image) => image.getAttribute('decoding'))"
+        )
+        self.assertTrue(gallery_decoding, "La galerie doit contenir des images.")
+        self.assertTrue(
+            all(value == "async" for value in gallery_decoding),
+            f"Toutes les photos de galerie doivent utiliser decoding=async: {gallery_decoding}",
+        )
+        self.assertEqual(
+            self.page.locator("#lightbox-img").get_attribute("decoding"),
+            "async",
+            "La visionneuse doit utiliser le décodage asynchrone.",
+        )
+
     def test_search_filters_series_and_recovers(self):
         search = self.page.locator("#series-search")
         search.fill("Divers")
