@@ -1,0 +1,38 @@
+name: Vérifier le portfolio
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+      - name: Configurer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Vérifier le HTML, le manifeste et les images
+        run: python scripts/validate-portfolio.py
+      - name: Vérifier la syntaxe JavaScript intégrée
+        shell: bash
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          html = Path("index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script\b(?![^>]*\bsrc\s*=)[^>]*>(.*?)</script\s*>", html, flags=re.I | re.S)
+          if not scripts:
+              raise SystemExit("Aucun script JavaScript intégré trouvé.")
+          for index, script in enumerate(scripts, 1):
+              Path(f"/tmp/portfolio-inline-{index}.js").write_text(script, encoding="utf-8")
+          print(f"{len(scripts)} script(s) intégré(s) extrait(s).")
+          PY
+          for file in /tmp/portfolio-inline-*.js; do node --check "$file"; done

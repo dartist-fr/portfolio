@@ -47,7 +47,8 @@ def build(folder, root_label=None, previous=None):
         ))
 
     photos = sorted(
-        (p for p in folder.iterdir() if p.is_file() and p.suffix.lower() in EXTENSIONS),
+        (p for p in folder.iterdir() if p.is_file() and p.suffix.lower() in EXTENSIONS
+         and not (p.suffix.lower() in {".jpg", ".jpeg"} and p.with_suffix(".webp").is_file())),
         key=lambda p: p.name.casefold()
     )
     photo_urls = [image_url(p) for p in photos]
@@ -92,6 +93,41 @@ def count_photos(item):
     return len(item.get("photos", [])) + sum(count_photos(c) for c in item.get("children", []))
 
 
+def validate_manifest(manifest):
+    from urllib.parse import unquote
+    missing = []
+    def check(item, location):
+        if not isinstance(item, dict):
+            raise SystemExit(f"Structure invalide dans {location}.")
+        for field in ("cover",):
+            value = item.get(field, "")
+            if value and not (ROOT / unquote(value).split("?", 1)[0]).is_file():
+                missing.append(f"{location}.{field}: {value}")
+        photos = item.get("photos", [])
+        if not isinstance(photos, list):
+            raise SystemExit(f"{location}.photos doit être une liste.")
+        for value in photos:
+            if not isinstance(value, str) or not (ROOT / unquote(value).split("?", 1)[0]).is_file():
+                missing.append(f"{location}.photos: {value}")
+        children = item.get("children", [])
+        if not isinstance(children, list):
+            raise SystemExit(f"{location}.children doit être une liste.")
+        for child in children:
+            check(child, location + "/" + str(child.get("titre", "?")))
+    albums = manifest.get("albums")
+    if not isinstance(albums, list):
+        raise SystemExit("Le champ albums doit être une liste.")
+    for album in albums:
+        if not isinstance(album, dict) or not isinstance(album.get("titre"), str) or not album["titre"].strip():
+            raise SystemExit("Chaque album doit posséder un titre.")
+        check(album, album["titre"])
+    hero = manifest.get("hero", {})
+    if isinstance(hero, dict) and hero.get("image") and not (ROOT / unquote(hero["image"]).split("?", 1)[0]).is_file():
+        missing.append("hero.image: " + hero["image"])
+    if missing:
+        raise SystemExit("Images référencées manquantes:\n- " + "\n- ".join(missing))
+
+
 def main():
     if not IMAGE_ROOT.exists():
         raise SystemExit(f"Dossier introuvable : {IMAGE_ROOT}")
@@ -126,7 +162,11 @@ def main():
         }),
         "albums": series,
     }
-    OUTPUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    validate_manifest(manifest)
+    temporary = OUTPUT.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    json.loads(temporary.read_text(encoding="utf-8"))
+    temporary.replace(OUTPUT)
     photo_count = sum(count_photos(s) for s in series)
     print(f"Manifeste généré : {len(series)} séries principales, {photo_count} photos.")
     print("Couvertures conservées tant que les fichiers correspondants existent.")
