@@ -27,6 +27,18 @@ def image_url(path):
     return "/".join(quote(part) for part in path.relative_to(ROOT).parts)
 
 
+def stable_photo_order(discovered_urls, previous_urls):
+    """Garde l’ordre historique des photos présentes et ajoute les nouvelles à la fin."""
+    available = set(discovered_urls)
+    retained = [url for url in previous_urls if url in available]
+    retained_set = set(retained)
+    added = sorted(
+        (url for url in discovered_urls if url not in retained_set),
+        key=str.casefold,
+    )
+    return retained + added
+
+
 def build(folder, root_label=None, previous=None):
     previous = previous or {}
     children = []
@@ -51,7 +63,10 @@ def build(folder, root_label=None, previous=None):
          and not (p.suffix.lower() in {".jpg", ".jpeg"} and p.with_suffix(".webp").is_file())),
         key=lambda p: p.name.casefold()
     )
-    photo_urls = [image_url(p) for p in photos]
+    discovered_urls = [image_url(p) for p in photos]
+    # Le manifeste est la source de vérité : les photos déjà publiées gardent
+    # leur ordre. Les nouvelles sont ajoutées à la fin, dans un ordre déterministe.
+    photo_urls = stable_photo_order(discovered_urls, previous.get("photos", []))
 
     # Toutes les images de ce dossier et de ses sous-dossiers restent candidates
     # pour la couverture d'un album parent.
@@ -169,6 +184,7 @@ def main():
     temporary.replace(OUTPUT)
     photo_count = sum(count_photos(s) for s in series)
     print(f"Manifeste généré : {len(series)} séries principales, {photo_count} photos.")
+    print("Ordre des photos existantes conservé ; nouvelles photos ajoutées à la fin.")
     print("Couvertures conservées tant que les fichiers correspondants existent.")
 
 
