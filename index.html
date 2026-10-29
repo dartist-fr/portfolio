@@ -622,7 +622,7 @@
     <span id="lightbox-counter" class="lb-counter" aria-live="polite"></span>
     <button class="lb-close" type="button" aria-label="Fermer" onclick="event.stopPropagation(); fermerLightbox()">✕</button>
     <button class="lb-nav lb-prev" type="button" aria-label="Photo précédente" onclick="event.stopPropagation(); naviguerLightbox(-1)">‹</button>
-    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+    <img id="lightbox-img" src="" alt="" decoding="async" onclick="event.stopPropagation()" />
     <button class="lb-nav lb-next" type="button" aria-label="Photo suivante" onclick="event.stopPropagation(); naviguerLightbox(1)">›</button>
     <button class="lb-fullscreen" type="button" onclick="event.stopPropagation(); basculerPleinEcran()" aria-label="Afficher en plein écran">Plein écran ⛶</button>
     <p id="lightbox-caption" class="lb-caption"></p>
@@ -721,6 +721,7 @@
           img.src = image;
           img.alt = "";
           img.loading = "lazy";
+          img.decoding = "async";
           img.draggable = false;
           img.onerror = () => {
             const fallback = document.createElement("span");
@@ -819,7 +820,7 @@
         card.innerHTML = `
           <div class="album-frame">
             <span class="album-index">${String(index + 1).padStart(2, "0")}</span>
-            <img src="${album.cover}" alt="Série : ${album.titre}" loading="lazy" onerror="this.onerror=null; this.style.visibility='hidden'; console.error('Image introuvable :', this.src)" />
+            <img src="${album.cover}" alt="Série : ${album.titre}" loading="lazy" decoding="async" onerror="this.onerror=null; this.style.visibility='hidden'; console.error('Image introuvable :', this.src)" />
             <span class="album-view">Voir la série</span>
           </div>
           <div class="album-info">
@@ -845,6 +846,7 @@
       image.dataset.photoPath = album.cover;
       image.alt = album.titre + " · photo principale";
       image.loading = "eager";
+      image.decoding = "async";
       image.onerror = () => {
         const fallback = document.createElement("span");
         fallback.className = "image-unavailable";
@@ -898,6 +900,7 @@
           const frame = document.createElement("div"); frame.className = "album-frame";
           if (child.cover) {
             const image = document.createElement("img"); image.src = child.cover; image.alt = "Série : " + child.titre; image.loading = "lazy";
+            image.decoding = "async";
             image.onerror = () => {
               const fallback = document.createElement("span");
               fallback.className = "image-unavailable";
@@ -927,6 +930,7 @@
         image.src = photo;
         image.alt = album.titre + " · cliché " + (i + 1);
         image.loading = "lazy";
+            image.decoding = "async";
         image.dataset.photoPath = photo;
         image.onerror = () => {
           const fallback = document.createElement("span");
@@ -964,6 +968,7 @@
           const frame = document.createElement("div"); frame.className = "album-frame";
           if (nested.cover) {
             const image = document.createElement("img"); image.src = nested.cover; image.alt = "Série : " + nested.titre; image.loading = "lazy";
+            image.decoding = "async";
             frame.appendChild(image);
           } else {
             const placeholder = document.createElement("div"); placeholder.className = "album-placeholder"; frame.appendChild(placeholder);
@@ -985,6 +990,7 @@
         image.src = photo;
         image.alt = child.titre + " · cliché " + (i + 1);
         image.loading = "lazy";
+            image.decoding = "async";
         image.dataset.photoPath = photo;
         item.appendChild(image);
         photosContainer.appendChild(item);
