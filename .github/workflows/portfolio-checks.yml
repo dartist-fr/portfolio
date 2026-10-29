@@ -19,6 +19,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - name: Tester la stabilité de l’ordre des photos
+        run: python -m unittest tests/test_manifest_order.py
       - name: Vérifier le HTML, le manifeste et les images
         run: python scripts/validate-portfolio.py
       - name: Vérifier la syntaxe JavaScript intégrée
