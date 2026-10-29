@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050609">
+<title>Portrait interactif — dartist.</title>
+<style>
+  :root{color-scheme:dark;--bg:#050609;--blue:#7cb9ff;--white:#f1f5ff}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;background:var(--bg);color:var(--white);font-family:Inter,Arial,sans-serif}
+  body{min-height:100svh;overflow-x:hidden}
+  .stage{position:relative;min-height:100svh;isolation:isolate;overflow:hidden;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 42%,#111b2c 0,#070a10 38%,#030405 76%)}
+  canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;touch-action:pan-y}
+  .noise{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.16;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E")}
+  .top{position:absolute;top:26px;left:clamp(20px,5vw,72px);right:clamp(20px,5vw,72px);display:flex;justify-content:space-between;align-items:center;z-index:4;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#aab5c8}
+  .brand{color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;font-size:1rem}.brand span{color:var(--blue)}
+  .top a:last-child{color:#d5dfef;text-decoration:none;border:1px solid #ffffff2e;border-radius:999px;padding:10px 15px;letter-spacing:.1em}
+  .content{width:100%;min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:100px 0 38px;position:relative}
+  .portrait-label{font-size:.67rem;letter-spacing:.36em;text-transform:uppercase;color:#b6c9e8;text-align:center;margin-bottom:15px}
+  .hint{position:absolute;top:17%;left:50%;transform:translateX(-50%);width:min(90%,420px);text-align:center;color:#c4cee0;font-size:.88rem;line-height:1.6;text-shadow:0 2px 16px #000;z-index:2}
+  .title{position:relative;z-index:2;width:100%;text-align:center;font-weight:900;font-size:clamp(3.6rem,16vw,15rem);letter-spacing:-.075em;line-height:.76;white-space:nowrap;color:transparent;background:linear-gradient(180deg,#fff 0%,#d5dfed 48%,#53657d 100%);background-clip:text;-webkit-background-clip:text;text-shadow:0 14px 35px #0009;mix-blend-mode:screen;pointer-events:none;margin-top:auto;margin-bottom:clamp(28px,7vh,84px)}
+  .bottom{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 18px 20px;text-align:center}
+  .upload{display:inline-flex;align-items:center;gap:10px;border:1px solid #d8e7ff6b;background:#111722d9;color:#f5f8ff;border-radius:999px;padding:13px 19px;font:inherit;font-size:.78rem;letter-spacing:.08em;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+  .upload:hover{background:#24354d;border-color:#9cc8ff;transform:translateY(-1px)}.upload:focus-visible{outline:2px solid var(--blue);outline-offset:4px}
+  .note{font-size:.7rem;color:#8996ac;max-width:54ch;line-height:1.5}
+  #photo-input{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  .corner{position:absolute;bottom:25px;left:clamp(20px,5vw,72px);z-index:3;color:#68768c;font-size:.65rem;letter-spacing:.13em;text-transform:uppercase}
+  .corner.right{left:auto;right:clamp(20px,5vw,72px)}
+  .cursor-ring{position:fixed;z-index:5;left:0;top:0;width:42px;height:42px;border:1px solid #b6d7ffb0;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);opacity:0;box-shadow:0 0 26px #4d9dff25}
+  @media(hover:hover) and (pointer:fine){body.has-photo{cursor:none}body.has-photo .cursor-ring{opacity:1}}
+  @media(max-width:600px){.top{top:18px}.hint{top:14%;font-size:.78rem}.content{padding-top:100px}.title{font-size:17vw;letter-spacing:-.08em;margin-bottom:34px}.corner{bottom:12px;font-size:.55rem}.bottom{padding-bottom:44px}.cursor-ring{display:none}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+  <canvas id="pixels" aria-label="Portrait en mosaïque interactive"></canvas><div class="noise" aria-hidden="true"></div>
+  <header class="top"><a class="brand" href="https://dartist-fr.github.io/portfolio/">dartist<span>.</span></a><a href="https://dartist-fr.github.io/portfolio/">Retour au portfolio ↗</a></header>
+  <section class="content">
+    <div class="hint" id="hint">Chaque pixel réagit à ton mouvement.<br>Ajoute ton portrait pour commencer l’expérience.</div>
+    <div class="portrait-label">Portrait numérique · Interaction en temps réel</div>
+    <h1 class="title">PORTFOLIO</h1>
+    <div class="bottom">
+      <label class="upload" for="photo-input">＋ Charger mon portrait</label>
+      <input id="photo-input" type="file" accept="image/*" aria-label="Choisir une photo pour créer le portrait interactif">
+      <p class="note">L’image reste dans ton navigateur : elle n’est envoyée sur aucun serveur. Pour un meilleur résultat, choisis un portrait net avec le visage et les épaules visibles.</p>
+    </div>
+  </section>
+  <div class="corner">dartist · expérience interactive</div><div class="corner right" id="status">En attente du portrait</div>
+</main>
+<div class="cursor-ring" id="ring" aria-hidden="true"></div>
+<script>
+(() => {
+  const canvas=document.getElementById('pixels'),ctx=canvas.getContext('2d',{alpha:true});
+  const input=document.getElementById('photo-input'),stage=document.getElementById('stage'),hint=document.getElementById('hint'),status=document.getElementById('status'),ring=document.getElementById('ring');
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let photo=null,w=0,h=0,dpr=1,points=[],mouse={x:-1000,y:-1000,active:false},ripples=[],raf=0,last=0;
+  const sample=document.createElement('canvas'),sctx=sample.getContext('2d',{willReadFrequently:true});
+  function resize(){
+    const rect=stage.getBoundingClientRect();w=rect.width;h=rect.height;dpr=Math.min(window.devicePixelRatio||1,1.7);
+    canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+    if(photo)buildPoints();draw(performance.now());
+  }
+  function buildPoints(){
+    const scale=Math.min((w*.76)/photo.width,(h*.72)/photo.height);
+    const iw=Math.max(1,Math.round(photo.width*scale)),ih=Math.max(1,Math.round(photo.height*scale));
+    sample.width=iw;sample.height=ih;sctx.clearRect(0,0,iw,ih);sctx.drawImage(photo,0,0,iw,ih);
+    let data;try{data=sctx.getImageData(0,0,iw,ih).data}catch(e){return}
+    const step=Math.max(3,Math.min(7,Math.round(Math.min(w,h)/130)));
+    points=[];const ox=(w-iw)/2,oy=Math.max(58,(h-ih)/2-26);
+    for(let y=0;y<ih;y+=step){for(let x=0;x<iw;x+=step){
+      const i=(y*iw+x)*4,r=data[i],g=data[i+1],b=data[i+2],a=data[i+3];
+      if(a<40)continue;
+      const lum=.2126*r+.7152*g+.0722*b;
+      const edge=(Math.sin(x*12.9898+y*78.233)*43758.5453)%1;
+      points.push({x:ox+x,y:oy+y,rgb:[r,g,b],lum,size:Math.max(1,step*(.48+(Math.abs(edge)*.55))),seed:Math.random()*6.28});
+    }}
+  }
+  function draw(time){
+    raf=0;ctx.clearRect(0,0,w,h);
+    const grad=ctx.createRadialGradient(w*.5,h*.42,0,w*.5,h*.42,Math.max(w,h)*.62);grad.addColorStop(0,'rgba(18,34,57,.26)');grad.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
+    if(!photo){
+      // Subtle ambient particles while waiting for the portrait.
+      for(let i=0;i<100;i++){const x=(i*137.5)%w,y=(i*79.3)%h;ctx.fillStyle='rgba(120,166,224,'+(.08+((i%7)/100))+')';ctx.fillRect(x,y,1,1)}
+      return;
+    }
+    const step=Math.max(3,Math.min(7,Math.round(Math.min(w,h)/130))),timeSec=time*.001;
+    for(const p of points){
+      let dx=0,dy=0;
+      if(mouse.active){const mx=p.x-mouse.x,my=p.y-mouse.y,dist=Math.hypot(mx,my),radius=Math.min(190,Math.max(90,w*.14));if(dist<radius&&dist>0){const force=(1-dist/radius);const wave=Math.sin(dist*.075-timeSec*4)*3;dx+=(mx/dist)*(force*36+wave);dy+=(my/dist)*(force*36+wave)}}
+      for(const r of ripples){const dist=Math.hypot(p.x-r.x,p.y-r.y),delta=Math.abs(dist-r.radius);if(delta<24){const force=(1-delta/24)*r.strength;dx+=(p.x-r.x)/(dist||1)*force;dy+=(p.y-r.y)/(dist||1)*force}}
+      const twinkle=reduced?0:(Math.sin(timeSec*1.4+p.seed)*.09);
+      const lum=p.lum/255,blue=Math.min(255,Math.round(160+lum*95)),green=Math.min(255,Math.round(181+lum*66)),red=Math.min(255,Math.round(105+lum*145));
+      const alpha=Math.min(.98,.23+lum*.72+twinkle);
+      ctx.fillStyle='rgba('+red+','+green+','+blue+','+alpha+')';
+      const size=p.size*(mouse.active&&Math.hypot(p.x-mouse.x,p.y-mouse.y)<120?1.22:1);
+      ctx.fillRect(p.x+dx-size/2,p.y+dy-size/2,size,size);
+      if(lum>.77&&p.size>3.5){ctx.fillStyle='rgba(210,232,255,.2)';ctx.fillRect(p.x+dx-size/2-1,p.y+dy-size/2-1,size+2,size+2)}
+    }
+    ripples=ripples.filter(r=>r.radius<r.max);for(const r of ripples){r.radius+=reduced?8:4.2;r.strength*=.975}
+    if(mouse.active&&!reduced&&Math.random()>.72){const x=mouse.x+(Math.random()-.5)*70,y=mouse.y+(Math.random()-.5)*70;ctx.fillStyle='rgba(136,193,255,.8)';ctx.fillRect(x,y,1+Math.random()*2,1+Math.random()*2)}
+    if(mouse.active||ripples.length){raf=requestAnimationFrame(draw)}else if(!reduced){raf=requestAnimationFrame(draw)}
+  }
+  function schedule(){if(!raf)raf=requestAnimationFrame(draw)}
+  function pointerMove(e){const rect=canvas.getBoundingClientRect();mouse.x=e.clientX-rect.left;mouse.y=e.clientY-rect.top;mouse.active=true;ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px';schedule()}
+  stage.addEventListener('pointermove',e=>{if(e.pointerType==='mouse')pointerMove(e)});
+  stage.addEventListener('pointerleave',()=>{mouse.active=false;ring.style.opacity='0';schedule()});
+  stage.addEventListener('pointerenter',()=>{if(window.matchMedia('(hover:hover) and (pointer:fine)').matches)ring.style.opacity='1'});
+  stage.addEventListener('pointerdown',e=>{const rect=canvas.getBoundingClientRect();ripples.push({x:e.clientX-rect.left,y:e.clientY-rect.top,radius:0,max:Math.max(w,h)*.65,strength:22});schedule()});
+  input.addEventListener('change',()=>{
+    const file=input.files&&input.files[0];if(!file)return;
+    if(!file.type.startsWith('image/')){status.textContent='Fichier image requis';return}
+    const url=URL.createObjectURL(file),img=new Image();
+    img.onload=()=>{photo=img;document.body.classList.add('has-photo');hint.innerHTML='Déplace la souris sur le portrait.<br>Clique ou touche l’écran pour envoyer une onde.';status.textContent='Portrait chargé';buildPoints();if(raf)cancelAnimationFrame(raf);raf=0;schedule();URL.revokeObjectURL(url)};
+    img.onerror=()=>{status.textContent='Impossible de lire cette image';URL.revokeObjectURL(url)};
+    img.src=url;
+  });
+  window.addEventListener('resize',resize,{passive:true});
+  resize();
+})();
+</script>
+</body>
+</html>
