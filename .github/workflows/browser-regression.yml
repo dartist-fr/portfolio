@@ -41,7 +41,7 @@ jobs:
 
   published-smoke:
     name: Vérification du site publié
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     needs: browser-regression
     runs-on: ubuntu-latest
     steps:
