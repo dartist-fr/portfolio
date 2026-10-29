@@ -68,11 +68,11 @@ class PortfolioBrowserRegression(unittest.TestCase):
 
     def test_search_filters_series_and_recovers(self):
         search = self.page.locator("#series-search")
-        search.fill("Rome")
+        search.fill("Divers")
         self.assertGreater(self.page.locator("#albums-view .album-card").count(), 0)
         self.assertTrue(
-            any("rome" in text.lower() for text in self.page.locator("#albums-view .album-title").all_text_contents()),
-            "La recherche Rome doit afficher une série correspondante.",
+            any("divers" in text.lower() for text in self.page.locator("#albums-view .album-title").all_text_contents()),
+            "La recherche Divers doit afficher une série correspondante.",
         )
         search.fill("une-serie-qui-nexiste-pas-qa")
         self.assertTrue(self.page.get_by_text("Aucune série ne correspond à votre recherche.").is_visible())
