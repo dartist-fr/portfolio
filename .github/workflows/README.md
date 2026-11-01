@@ -7,7 +7,7 @@ Ce dossier contient les automatisations de génération, de contrôle et de rég
 Workflow : `portfolio-auto.yml` — **Actualiser le portfolio**.
 
 Déclencheurs :
-- push sur `main) qui modifie `images/**`, le générateur, le convertisseur JPG/WebP ou le workflow ;
+- push sur `main` qui modifie `images/**`, le générateur, le convertisseur JPG/WebP ou le workflow ;
 - lancement manuel depuis l’onglet **Actions**.
 
 Étapes principales :
